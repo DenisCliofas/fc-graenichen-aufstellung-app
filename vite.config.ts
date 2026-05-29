@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/fc-graenichen-roster/',
+  base: '/fc-graenichen-aufstellung-app/',
 })
