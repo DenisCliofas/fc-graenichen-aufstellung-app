@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Player, Trainer, Lineup, PositionKey, POSITION_LABELS } from '../../types';
 import './PresentationView.css';
+import logoSvg from '../../assets/logo.svg';
 
 interface Props {
   players: Player[];
@@ -182,7 +183,7 @@ export default function PresentationView({ players, trainers, lineup, onBack }: 
           </div>
           <div className="pres-intro-content">
             <div className="pres-logo-wrap">
-              <img src="/logo.svg" alt="FC Gränichen" className="pres-logo" />
+              <img src={logoSvg} alt="FC Gränichen" className="pres-logo" />
             </div>
             <div className="pres-club-name">
               <span className="pres-club-fc">FC</span>
@@ -341,7 +342,7 @@ export default function PresentationView({ players, trainers, lineup, onBack }: 
             <div className="pres-shape pres-shape-2" />
           </div>
           <div className="pres-end-content">
-            <div className="pres-end-logo"><img src="/logo.svg" alt="FC Gränichen" /></div>
+            <div className="pres-end-logo"><img src={logoSvg} alt="FC Gränichen" /></div>
             <div className="pres-end-hopp">HOPP</div>
             <div className="pres-end-club">FC GRÄNICHEN!</div>
             <div className="pres-end-emojis">💛 🖤 💛 🖤 💛</div>

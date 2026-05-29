@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
+import logoSvg from './assets/logo.svg';
 import { Player, Trainer, Lineup, AppTab } from './types';
 import { loadPlayers, savePlayers, loadTrainers, saveTrainers, loadLineup, saveLineup } from './storage';
 import PlayerManager from './components/PlayerManager/PlayerManager';
@@ -50,7 +51,7 @@ function App() {
       <div className="app-header-banner">
         <span className="app-banner-text">AUFSTELLUNGS-APP</span>
         <a className="app-banner-logo" href="https://www.fcgraenichen.ch" target="_blank" rel="noopener noreferrer">
-          <img src="/logo.svg" alt="FC Gränichen" />
+          <img src={logoSvg} alt="FC Gränichen" />
         </a>
         <span className="app-banner-text">FC GRÄNICHEN 1907</span>
       </div>
