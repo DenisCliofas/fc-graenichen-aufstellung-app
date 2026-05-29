@@ -1,0 +1,190 @@
+.photo-cropper-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.photo-cropper-modal {
+  background: var(--white);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+
+.photo-cropper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 2px solid var(--yellow);
+  flex-shrink: 0;
+}
+
+.photo-cropper-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  color: var(--black);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.photo-cropper-close {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--black);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.photo-cropper-close:hover { background: var(--mid-gray); }
+
+/* Upload state */
+.photo-cropper-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 2rem;
+}
+
+.photo-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--yellow);
+  color: var(--black);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.photo-upload-btn:hover { background: var(--yellow-dark); }
+
+.photo-upload-hint {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--light-gray);
+}
+
+/* Crop canvas area */
+.photo-cropper-canvas {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: #111;
+  min-height: 260px;
+  max-height: 55vh;
+  touch-action: none;
+  user-select: none;
+}
+
+.photo-cropper-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* Dark overlay panels around the crop box */
+.photo-cropper-overlay-top,
+.photo-cropper-overlay-bottom,
+.photo-cropper-overlay-left,
+.photo-cropper-overlay-right {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+.photo-cropper-overlay-bottom { bottom: 0; top: auto; }
+.photo-cropper-overlay-left  { right: auto; }
+.photo-cropper-overlay-right { left: auto; right: 0; }
+
+/* Crop box */
+.photo-crop-box {
+  position: absolute;
+  border: 2px solid var(--yellow);
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0); /* invisible, overlay panels do the dimming */
+  cursor: move;
+  touch-action: none;
+  box-sizing: border-box;
+}
+
+/* Rule-of-thirds grid lines */
+.crop-grid-h,
+.crop-grid-v {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+}
+.crop-grid-h { left: 0; right: 0; height: 1px; }
+.crop-grid-v { top: 0; bottom: 0; width: 1px; }
+.crop-grid-h.crop-grid-1 { top: 33.3%; }
+.crop-grid-h.crop-grid-2 { top: 66.6%; }
+.crop-grid-v.crop-grid-1 { left: 33.3%; }
+.crop-grid-v.crop-grid-2 { left: 66.6%; }
+
+/* Corner markers */
+.photo-crop-box::before,
+.photo-crop-box::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--yellow);
+  border-style: solid;
+}
+.photo-crop-box::before { top: -2px; left: -2px; border-width: 3px 0 0 3px; }
+.photo-crop-box::after  { bottom: -2px; right: 26px; border-width: 0 0 3px 0; pointer-events: none; }
+
+/* Resize handle — bottom-right corner */
+.crop-resize-handle {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
+  cursor: nwse-resize;
+  touch-action: none;
+}
+.crop-resize-handle::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  border-bottom: 3px solid var(--yellow);
+  border-right: 3px solid var(--yellow);
+}
+
+/* Footer */
+.photo-cropper-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+}

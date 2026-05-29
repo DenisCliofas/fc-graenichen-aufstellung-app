@@ -1,0 +1,232 @@
+.player-manager {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Add Player Card */
+.add-player-card {
+  margin-bottom: 2rem;
+}
+
+.add-player-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  color: var(--black);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.add-player-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 80px;
+  gap: 0 1rem;
+  align-items: end;
+}
+
+.form-group-wide {
+  grid-column: 1 / -1;
+}
+
+.add-player-btn-row {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+}
+
+.form-error {
+  background: rgba(192, 57, 43, 0.2);
+  border: 1px solid #c0392b;
+  border-radius: var(--border-radius);
+  color: #e74c3c;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Player Count */
+.player-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: var(--dark-gray);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Player List */
+.player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.empty-state {
+  color: var(--light-gray);
+  font-style: italic;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Player Row */
+.player-row {
+  transition: border-color 0.2s;
+}
+
+.player-row:hover {
+  border-color: var(--yellow-dark);
+}
+
+.player-row-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Avatars */
+.player-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.player-avatar-number {
+  background: var(--black);
+  border: 2px solid var(--yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-avatar-number span {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--yellow);
+  line-height: 1;
+}
+
+.player-avatar-photo {
+  border: 2px solid var(--yellow);
+}
+
+/* Player Info */
+.player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-name {
+  font-size: 1.1rem;
+  color: var(--black);
+  letter-spacing: 0.5px;
+}
+
+.player-name strong {
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.player-notes {
+  font-size: 0.8rem;
+  color: var(--light-gray);
+  margin-top: 0.15rem;
+  font-style: italic;
+}
+
+/* Player Actions */
+.player-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.delete-confirm-text {
+  font-size: 0.85rem;
+  color: #e74c3c;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Edit Form */
+.player-edit-form {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.edit-fields {
+  flex: 1;
+}
+
+.edit-fields-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.edit-fields-row .form-group {
+  flex: 1;
+  min-width: 80px;
+  margin-bottom: 0;
+}
+
+.form-group-num {
+  flex: 0 0 70px !important;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .add-player-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .player-row-content {
+    flex-wrap: wrap;
+  }
+
+  .player-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .player-edit-form {
+    flex-direction: column;
+  }
+
+  .edit-fields-row {
+    flex-wrap: wrap;
+  }
+}
+
+/* Photo upload field */
+.photo-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.photo-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--yellow);
+  flex-shrink: 0;
+}
