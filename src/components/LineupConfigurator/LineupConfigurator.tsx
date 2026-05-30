@@ -181,22 +181,26 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
           <div className="lineup-section card">
             <h3 className="lineup-section-title">Abwesend</h3>
             <div className="absent-list">
-              {sortedPlayers.map(player => {
-                const isAbsent = lineup.absent.includes(player.id);
-                const isAssigned = assignedIds.has(player.id) && !isAbsent;
-                return (
-                  <button
-                    key={player.id}
-                    className={`absent-player-btn${isAbsent ? ' absent' : ''}${isAssigned ? ' assigned' : ''}`}
-                    onClick={() => toggleAbsent(player.id)}
-                    title={isAssigned ? 'Spieler ist in der Aufstellung' : isAbsent ? 'Als anwesend markieren' : 'Als abwesend markieren'}
-                  >
-                    <span className="absent-number">{player.number}</span>
-                    <span className="absent-name">{player.firstName} {player.lastName}</span>
-                    {isAbsent && <span className="absent-badge">✗ Abwesend</span>}
-                  </button>
-                );
-              })}
+              {sortedPlayers
+                .filter(player => {
+                  const isAssigned = assignedIds.has(player.id) && !lineup.absent.includes(player.id);
+                  return !isAssigned;
+                })
+                .map(player => {
+                  const isAbsent = lineup.absent.includes(player.id);
+                  return (
+                    <button
+                      key={player.id}
+                      className={`absent-player-btn${isAbsent ? ' absent' : ''}`}
+                      onClick={() => toggleAbsent(player.id)}
+                      title={isAbsent ? 'Als anwesend markieren' : 'Als abwesend markieren'}
+                    >
+                      <span className="absent-number">{player.number}</span>
+                      <span className="absent-name">{player.firstName} {player.lastName}</span>
+                      {isAbsent && <span className="absent-badge">✗ Abwesend</span>}
+                    </button>
+                  );
+                })}
             </div>
           </div>
 
