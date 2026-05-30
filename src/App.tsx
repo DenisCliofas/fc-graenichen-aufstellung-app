@@ -4,6 +4,7 @@ import './App.css';
 import logoSvg from './assets/logo.svg';
 import { Player, Trainer, Lineup, AppTab } from './types';
 import { loadPlayers, savePlayers, loadTrainers, saveTrainers, loadLineup, saveLineup } from './storage';
+import { savePlayersToFirestore, saveTrainersToFirestore, saveLineupToFirestore } from './firestore';
 import PlayerManager from './components/PlayerManager/PlayerManager';
 import TrainerManager from './components/TrainerManager/TrainerManager';
 import LineupConfigurator from './components/LineupConfigurator/LineupConfigurator';
@@ -19,9 +20,9 @@ function EditorLayout() {
     return loadLineup(loadedTrainers.map(t => t.id));
   });
 
-  useEffect(() => { savePlayers(players); }, [players]);
-  useEffect(() => { saveTrainers(trainers); }, [trainers]);
-  useEffect(() => { saveLineup(lineup); }, [lineup]);
+  useEffect(() => { savePlayers(players); savePlayersToFirestore(players); }, [players]);
+  useEffect(() => { saveTrainers(trainers); saveTrainersToFirestore(trainers); }, [trainers]);
+  useEffect(() => { saveLineup(lineup); saveLineupToFirestore(lineup); }, [lineup]);
 
   return (
     <div className="app">
