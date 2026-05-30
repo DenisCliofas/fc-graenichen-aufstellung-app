@@ -71,7 +71,7 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
       } else {
         setMainPhase('end');
       }
-    }, 2500);
+    }, 5000);
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainPhase]);
