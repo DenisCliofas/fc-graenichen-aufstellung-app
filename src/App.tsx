@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 import logoSvg from './assets/logo.svg';
 import { Player, Trainer, Lineup, AppTab } from './types';
@@ -6,9 +7,10 @@ import { loadPlayers, savePlayers, loadTrainers, saveTrainers, loadLineup, saveL
 import PlayerManager from './components/PlayerManager/PlayerManager';
 import TrainerManager from './components/TrainerManager/TrainerManager';
 import LineupConfigurator from './components/LineupConfigurator/LineupConfigurator';
-import PresentationView from './components/PresentationView/PresentationView';
+import PresentationPage from './pages/PresentationPage';
 
-function App() {
+function EditorLayout() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<AppTab>('trainers');
   const [players, setPlayers] = useState<Player[]>(() => loadPlayers());
   const [trainers, setTrainers] = useState<Trainer[]>(() => loadTrainers());
@@ -20,17 +22,6 @@ function App() {
   useEffect(() => { savePlayers(players); }, [players]);
   useEffect(() => { saveTrainers(trainers); }, [trainers]);
   useEffect(() => { saveLineup(lineup); }, [lineup]);
-
-  if (activeTab === 'presentation') {
-    return (
-      <PresentationView
-        players={players}
-        trainers={trainers}
-        lineup={lineup}
-        onBack={() => setActiveTab('lineup')}
-      />
-    );
-  }
 
   return (
     <div className="app">
@@ -61,7 +52,6 @@ function App() {
           <TrainerManager
             trainers={trainers}
             onUpdateTrainers={(updated) => {
-              // Auto-select any newly added trainer in the lineup
               const newIds = updated.map(t => t.id).filter(id => !trainers.some(t => t.id === id));
               if (newIds.length > 0) {
                 setLineup(l => ({ ...l, coaches: [...l.coaches, ...newIds] }));
@@ -79,11 +69,21 @@ function App() {
             trainers={trainers}
             lineup={lineup}
             onUpdateLineup={setLineup}
-            onStartPresentation={() => setActiveTab('presentation')}
+            onStartPresentation={() => navigate('/presentation')}
           />
         )}
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/editor" element={<EditorLayout />} />
+      <Route path="/presentation" element={<PresentationPage />} />
+      <Route path="*" element={<Navigate to="/editor" replace />} />
+    </Routes>
   );
 }
 

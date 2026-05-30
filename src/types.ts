@@ -35,7 +35,7 @@ export type Lineup = {
   matchDate?: string; // ISO date string YYYY-MM-DD
 };
 
-export type AppTab = 'trainers' | 'players' | 'lineup' | 'presentation';
+export type AppTab = 'trainers' | 'players' | 'lineup';
 
 export type PositionKey = keyof LineupStarters;
 
