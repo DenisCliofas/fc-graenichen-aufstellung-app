@@ -16,6 +16,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
   const [modalContext, setModalContext] = useState<
     | { type: 'starter'; posKey: PositionKey }
     | { type: 'substitute'; slotIndex: number }
+    | { type: 'captain' }
     | null
   >(null);
 
@@ -73,6 +74,8 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
       const subs = [...lineup.substitutes];
       subs[modalContext.slotIndex] = playerId;
       onUpdateLineup({ ...lineup, substitutes: subs });
+    } else if (modalContext.type === 'captain') {
+      onUpdateLineup({ ...lineup, captain: playerId });
     }
     setModalContext(null);
   };
@@ -239,26 +242,33 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                 ...lineup.substitutes,
               ];
               const lineupPlayers = sortedPlayers.filter(p => allLineupIds.includes(p.id));
+              const captain = lineup.captain ? players.find(p => p.id === lineup.captain) : undefined;
               if (lineupPlayers.length === 0) {
                 return <span className="empty-coaches">Spieler der Aufstellung hinzufügen, um einen Captain zu wählen.</span>;
               }
               return (
-                <div className="absent-list">
-                  {lineupPlayers.map(player => {
-                    const isCaptain = lineup.captain === player.id;
-                    return (
-                      <button
-                        key={player.id}
-                        className={`absent-player-btn${isCaptain ? ' assigned' : ''}`}
-                        onClick={() => onUpdateLineup({ ...lineup, captain: isCaptain ? undefined : player.id })}
-                        title={isCaptain ? 'Captain abwählen' : 'Als Captain wählen'}
-                      >
-                        <span className="absent-number">{player.number}</span>
-                        <span className="absent-name">{player.firstName} {player.lastName}</span>
-                        {isCaptain && <span className="trainer-badge trainer-badge-dabei">© Captain</span>}
-                      </button>
-                    );
-                  })}
+                <div className="captain-picker">
+                  {captain ? (
+                    <div className="captain-current">
+                      <div className="captain-avatar">
+                        {captain.photoUrl
+                          ? <img src={captain.photoUrl} alt="" />
+                          : <span>{captain.number}</span>
+                        }
+                        <div className="captain-c-badge">C</div>
+                      </div>
+                      <span className="captain-name">{captain.firstName} {captain.lastName.toUpperCase()}</span>
+                      <button className="sub-clear-btn" onClick={() => onUpdateLineup({ ...lineup, captain: undefined })} title="Captain abwählen">✕</button>
+                    </div>
+                  ) : (
+                    <span className="empty-coaches">Kein Captain gewählt.</span>
+                  )}
+                  <button
+                    className="btn btn-secondary captain-pick-btn"
+                    onClick={() => setModalContext({ type: 'captain' })}
+                  >
+                    {captain ? '✏ Captain ändern' : '+ Captain wählen'}
+                  </button>
                 </div>
               );
             })()}
@@ -302,14 +312,23 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
       {/* Modal */}
       {modalContext && (
         <PlayerSelectModal
-          players={players}
-          assignedIds={getAssignedForModal()}
+          players={
+            modalContext.type === 'captain'
+              ? sortedPlayers.filter(p => [
+                  ...Object.values(lineup.starters).filter(Boolean) as string[],
+                  ...lineup.substitutes,
+                ].includes(p.id))
+              : players
+          }
+          assignedIds={modalContext.type === 'captain' ? new Set() : getAssignedForModal()}
           onSelect={handlePlayerSelect}
           onClose={() => setModalContext(null)}
           title={
             modalContext.type === 'starter'
               ? POSITION_LABELS[modalContext.posKey]
-              : `Ersatzspieler Bank ${modalContext.slotIndex + 1}`
+              : modalContext.type === 'substitute'
+              ? `Ersatzspieler Bank ${modalContext.slotIndex + 1}`
+              : 'Captain wählen'
           }
         />
       )}
