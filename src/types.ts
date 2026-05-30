@@ -31,6 +31,7 @@ export type Lineup = {
   substitutes: string[];
   absent: string[];
   coaches: string[];
+  captain?: string;
   opponent?: string;
   matchDate?: string; // ISO date string YYYY-MM-DD
 };

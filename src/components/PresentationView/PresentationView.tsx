@@ -230,6 +230,7 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
                 const [top, left] = FIELD_POS[posKey];
                 const isPlaced = placed.has(posKey);
                 const isArriving = arrivingPos === posKey;
+                const isCaptain = lineup.captain === player.id;
                 return (
                   <div
                     key={posKey}
@@ -241,6 +242,7 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
                         ? <img src={player.photoUrl} alt="" />
                         : <span>{player.number}</span>
                       }
+                      {isCaptain && <div className="pres-captain-badge">C</div>}
                     </div>
                     <div className="pres-ptoken-name">{player.lastName.toUpperCase()}</div>
                   </div>
@@ -264,11 +266,17 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
                         </>
                       : <span className="pres-spot-num">{entry.player.number}</span>
                     }
+                    {lineup.captain === entry.player.id && (
+                      <div className="pres-spot-captain-badge">C</div>
+                    )}
                   </div>
                   <div className="pres-spot-names">
                     <div className="pres-spot-firstname">{entry.player.firstName}</div>
                     <div className="pres-spot-lastname">{entry.player.lastName.toUpperCase()}</div>
                   </div>
+                  {lineup.captain === entry.player.id && (
+                    <div className="pres-spot-captain-label">⚽ CAPTAIN</div>
+                  )}
                 </div>
               </div>
             );
@@ -298,6 +306,9 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
                     </div>
                     {player.photoUrl && (
                       <div className="pres-card-number-badge">{player.number}</div>
+                    )}
+                    {lineup.captain === player.id && (
+                      <div className="pres-captain-badge">C</div>
                     )}
                   </div>
                   <div className="pres-card-info">

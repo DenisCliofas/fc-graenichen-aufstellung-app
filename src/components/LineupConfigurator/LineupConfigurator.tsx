@@ -230,10 +230,43 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
               </div>
             )}
           </div>
+          {/* Captain */}
+          <div className="lineup-section card">
+            <h3 className="lineup-section-title">Captain</h3>
+            {(() => {
+              const allLineupIds = [
+                ...Object.values(lineup.starters).filter(Boolean) as string[],
+                ...lineup.substitutes,
+              ];
+              const lineupPlayers = sortedPlayers.filter(p => allLineupIds.includes(p.id));
+              if (lineupPlayers.length === 0) {
+                return <span className="empty-coaches">Spieler der Aufstellung hinzufügen, um einen Captain zu wählen.</span>;
+              }
+              return (
+                <div className="absent-list">
+                  {lineupPlayers.map(player => {
+                    const isCaptain = lineup.captain === player.id;
+                    return (
+                      <button
+                        key={player.id}
+                        className={`absent-player-btn${isCaptain ? ' assigned' : ''}`}
+                        onClick={() => onUpdateLineup({ ...lineup, captain: isCaptain ? undefined : player.id })}
+                        title={isCaptain ? 'Captain abwählen' : 'Als Captain wählen'}
+                      >
+                        <span className="absent-number">{player.number}</span>
+                        <span className="absent-name">{player.firstName} {player.lastName}</span>
+                        {isCaptain && <span className="trainer-badge trainer-badge-dabei">© Captain</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </div>
+
         </div>
       </div>
 
-      {/* Actions */}
       <div className="lineup-actions">
         <div className="lineup-match-info">
           <div className="match-info-field">

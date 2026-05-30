@@ -1040,3 +1040,53 @@
   text-align: center;
 }
 
+/* ---- Captain badge ---- */
+.pres-captain-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  background: var(--yellow);
+  color: var(--black);
+  border-radius: 50%;
+  border: 2px solid var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 900;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  z-index: 2;
+}
+
+.pres-spot-captain-badge {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: clamp(32px, 7vw, 48px);
+  height: clamp(32px, 7vw, 48px);
+  background: var(--yellow);
+  color: var(--black);
+  border-radius: 50%;
+  border: 3px solid var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: clamp(0.9rem, 2.5vw, 1.5rem);
+  font-weight: 900;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  z-index: 2;
+}
+
+.pres-spot-captain-label {
+  margin-top: clamp(8px, 2vw, 16px);
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 3vw, 1.6rem);
+  color: var(--yellow);
+  letter-spacing: 0.1em;
+  animation: shimmer 2s infinite;
+}
+
