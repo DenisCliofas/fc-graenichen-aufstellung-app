@@ -354,7 +354,14 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
       <div className="pres-controls">
         <button className="pres-ctrl-btn" onClick={handleRestart}>⟳ <span>Neustart</span></button>
         <button className="pres-ctrl-btn" onClick={handleFullscreen}>⛶ <span>Vollbild</span></button>
-        <button className="pres-ctrl-btn pres-ctrl-share" onClick={handleShare}>⬆ <span>Teilen</span></button>
+        <button className="pres-ctrl-btn pres-ctrl-share" onClick={handleShare}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}>
+            <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+          {' '}<span>Teilen</span>
+        </button>
       </div>
       {shareFeedback && <div className="pres-share-toast">{shareFeedback}</div>}
     </div>
