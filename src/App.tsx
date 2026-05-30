@@ -19,21 +19,24 @@ function EditorLayout() {
     const loadedTrainers = loadTrainers();
     return loadLineup(loadedTrainers.map(t => t.id));
   });
+  const [cloudSynced, setCloudSynced] = useState(false);
 
-  useEffect(() => { savePlayers(players); savePlayersToFirestore(players); }, [players]);
-  useEffect(() => { saveTrainers(trainers); saveTrainersToFirestore(trainers); }, [trainers]);
-  useEffect(() => { saveLineup(lineup); saveLineupToFirestore(lineup); }, [lineup]);
-
-  // On first load, sync from Firestore (so any device gets the latest data)
+  // On first load, fetch from Firestore before enabling cloud writes
   useEffect(() => {
     const unsub = subscribeToRoster(({ players: fp, trainers: ft, lineup: fl }) => {
       if (fp.length > 0) { setPlayers(fp); savePlayers(fp); }
       if (ft.length > 0) { setTrainers(ft); saveTrainers(ft); }
       if (fl) { setLineup(fl); saveLineup(fl); }
-      unsub(); // only need it once on load
+      setCloudSynced(true);
+      unsub();
     });
     return unsub;
   }, []);
+
+  // Only save to Firestore after initial cloud sync — prevents overwriting cloud with stale local data
+  useEffect(() => { savePlayers(players); if (cloudSynced) savePlayersToFirestore(players); }, [players, cloudSynced]);
+  useEffect(() => { saveTrainers(trainers); if (cloudSynced) saveTrainersToFirestore(trainers); }, [trainers, cloudSynced]);
+  useEffect(() => { saveLineup(lineup); if (cloudSynced) saveLineupToFirestore(lineup); }, [lineup, cloudSynced]);
 
   return (
     <div className="app">
