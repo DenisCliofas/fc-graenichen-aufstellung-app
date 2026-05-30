@@ -82,7 +82,7 @@ function App() {
     <Routes>
       <Route path="/editor" element={<EditorLayout />} />
       <Route path="/presentation" element={<PresentationPage />} />
-      <Route path="*" element={<Navigate to="/editor" replace />} />
+      <Route path="*" element={<Navigate to="/presentation" replace />} />
     </Routes>
   );
 }
