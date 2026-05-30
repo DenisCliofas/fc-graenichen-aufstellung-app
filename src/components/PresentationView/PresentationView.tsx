@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Player, Trainer, Lineup, PositionKey, POSITION_LABELS } from '../../types';
 import './PresentationView.css';
 import logoSvg from '../../assets/logo.svg';
+import { useAnthem } from '../../hooks/useAnthem';
 
 interface Props {
   players: Player[];
@@ -41,6 +42,9 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
   const [arrivingPos, setArrivingPos] = useState<PositionKey | null>(null);
   const [allPlaced, setAllPlaced] = useState(false);
   const [key, setKey] = useState(0);
+  const [musicOn, setMusicOn] = useState(false);
+
+  const anthem = useAnthem();
 
   const starters = STARTER_ORDER
     .map(posKey => {
@@ -134,6 +138,16 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
     setMainPhase('intro');
     setKey(k => k + 1);
   }, []);
+
+  const handleMusicToggle = useCallback(() => {
+    if (!musicOn) {
+      anthem.start();
+      setMusicOn(true);
+    } else {
+      anthem.stop();
+      setMusicOn(false);
+    }
+  }, [musicOn, anthem]);
 
   const handleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -365,6 +379,25 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
       <div className="pres-controls">
         <button className="pres-ctrl-btn" onClick={handleRestart}>⟳ <span>Neustart</span></button>
         <button className="pres-ctrl-btn" onClick={handleFullscreen}>⛶ <span>Vollbild</span></button>
+        <button
+          className={`pres-ctrl-btn pres-ctrl-music${musicOn ? ' active' : ''}`}
+          onClick={handleMusicToggle}
+          title={musicOn ? 'Musik ausschalten' : 'Musik einschalten'}
+        >
+          {musicOn ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}>
+              <path d="M9 18V5l12-2v13"/>
+              <circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}>
+              <line x1="2" y1="2" x2="22" y2="22"/>
+              <path d="M9 18V5l12-2v13"/><path d="M6 15.7A3 3 0 0 0 6 21a3 3 0 0 0 2.83-4"/>
+              <path d="M18 13.7A3 3 0 0 0 18 19a3 3 0 0 0 2.83-4"/>
+            </svg>
+          )}
+          {' '}<span>{musicOn ? 'Musik' : 'Musik'}</span>
+        </button>
         <button className="pres-ctrl-btn pres-ctrl-share" onClick={handleShare}>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}>
             <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/>

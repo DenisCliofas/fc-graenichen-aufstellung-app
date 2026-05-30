@@ -675,6 +675,15 @@
   background: rgba(255, 212, 0, 0.18);
 }
 
+.pres-ctrl-music.active {
+  color: var(--yellow);
+  border-color: var(--yellow);
+  box-shadow: 0 0 8px rgba(255, 212, 0, 0.35);
+}
+.pres-ctrl-music.active:hover {
+  background: rgba(255, 212, 0, 0.15);
+}
+
 .pres-share-toast {
   position: fixed;
   bottom: 5rem;
