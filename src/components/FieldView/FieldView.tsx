@@ -17,7 +17,7 @@ function PositionSlot({ posKey, playerId, players, onClick, onClear }: PositionS
   return (
     <div className={`position-slot${player ? ' filled' : ' empty'}`} title={fullLabel}>
       {player ? (
-        <div className="slot-filled">
+        <div className="slot-filled" onClick={() => onClick(posKey)} style={{ cursor: 'pointer' }}>
           <div className="slot-avatar">
             {player.photoUrl ? (
               <img src={player.photoUrl} alt="" className="slot-avatar-img" />

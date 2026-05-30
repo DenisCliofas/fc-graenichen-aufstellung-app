@@ -145,7 +145,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                 return (
                   <div key={i} className={`sub-slot${player ? ' filled' : ''}`}>
                     {player ? (
-                      <div className="sub-slot-filled">
+                      <div className="sub-slot-filled" onClick={() => handleSubSlotClick(i)} style={{ cursor: 'pointer' }}>
                         <div className="sub-avatar">
                           {player.photoUrl ? (
                             <img src={player.photoUrl} alt="" className="sub-avatar-img" />
@@ -156,7 +156,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                         <span className="sub-name">
                           {player.firstName.charAt(0)}. {player.lastName.toUpperCase()}
                         </span>
-                        <button className="sub-clear-btn" onClick={() => handleSubSlotClear(i)}>✕</button>
+                        <button className="sub-clear-btn" onClick={(e) => { e.stopPropagation(); handleSubSlotClear(i); }}>✕</button>
                       </div>
                     ) : (
                       <button
