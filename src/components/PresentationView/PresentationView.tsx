@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Player, Trainer, Lineup, PositionKey, POSITION_LABELS } from '../../types';
 import './PresentationView.css';
 import logoSvg from '../../assets/logo.svg';
@@ -43,25 +43,8 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
   const [allPlaced, setAllPlaced] = useState(false);
   const [key, setKey] = useState(0);
   const [musicOn, setMusicOn] = useState(true);
-  const musicOnRef = useRef(true);
 
   const anthem = useAnthem();
-
-  // Start music on first user interaction (browser autoplay policy requires a gesture)
-  useEffect(() => {
-    const startOnGesture = () => {
-      if (musicOnRef.current) anthem.start();
-      window.removeEventListener('pointerdown', startOnGesture);
-      window.removeEventListener('keydown', startOnGesture);
-    };
-    window.addEventListener('pointerdown', startOnGesture);
-    window.addEventListener('keydown', startOnGesture);
-    return () => {
-      window.removeEventListener('pointerdown', startOnGesture);
-      window.removeEventListener('keydown', startOnGesture);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const starters = STARTER_ORDER
     .map(posKey => {
@@ -157,15 +140,9 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
   }, []);
 
   const handleMusicToggle = useCallback(() => {
-    if (!musicOn) {
-      anthem.start();
-      setMusicOn(true);
-      musicOnRef.current = true;
-    } else {
-      anthem.stop();
-      setMusicOn(false);
-      musicOnRef.current = false;
-    }
+    const next = !musicOn;
+    anthem.setMuted(!next);
+    setMusicOn(next);
   }, [musicOn, anthem]);
 
   const handleFullscreen = () => {
