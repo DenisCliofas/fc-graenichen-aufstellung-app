@@ -193,7 +193,7 @@
 /* Responsive */
 @media (max-width: 600px) {
   .add-player-form {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .player-row-content {
