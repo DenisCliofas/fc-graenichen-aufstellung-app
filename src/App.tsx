@@ -4,7 +4,7 @@ import './App.css';
 import logoSvg from './assets/logo.svg';
 import { Player, Trainer, Lineup, AppTab } from './types';
 import { loadPlayers, savePlayers, loadTrainers, saveTrainers, loadLineup, saveLineup } from './storage';
-import { savePlayersToFirestore, saveTrainersToFirestore, saveLineupToFirestore } from './firestore';
+import { savePlayersToFirestore, saveTrainersToFirestore, saveLineupToFirestore, subscribeToRoster } from './firestore';
 import PlayerManager from './components/PlayerManager/PlayerManager';
 import TrainerManager from './components/TrainerManager/TrainerManager';
 import LineupConfigurator from './components/LineupConfigurator/LineupConfigurator';
@@ -23,6 +23,17 @@ function EditorLayout() {
   useEffect(() => { savePlayers(players); savePlayersToFirestore(players); }, [players]);
   useEffect(() => { saveTrainers(trainers); saveTrainersToFirestore(trainers); }, [trainers]);
   useEffect(() => { saveLineup(lineup); saveLineupToFirestore(lineup); }, [lineup]);
+
+  // On first load, sync from Firestore (so any device gets the latest data)
+  useEffect(() => {
+    const unsub = subscribeToRoster(({ players: fp, trainers: ft, lineup: fl }) => {
+      if (fp.length > 0) { setPlayers(fp); savePlayers(fp); }
+      if (ft.length > 0) { setTrainers(ft); saveTrainers(ft); }
+      if (fl) { setLineup(fl); saveLineup(fl); }
+      unsub(); // only need it once on load
+    });
+    return unsub;
+  }, []);
 
   return (
     <div className="app">
