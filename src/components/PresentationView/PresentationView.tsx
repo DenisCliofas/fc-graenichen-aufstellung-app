@@ -7,7 +7,6 @@ interface Props {
   players: Player[];
   trainers: Trainer[];
   lineup: Lineup;
-  onBack: () => void;
 }
 
 // [top%, left%] within the portrait field element (1-3-3 formation, GK at bottom)
@@ -34,7 +33,7 @@ const STARTER_ORDER: PositionKey[] = [
 type MainPhase = 'intro' | 'starters' | 'substitutes' | 'end';
 type SpotState = 'entering' | 'showing' | 'exiting';
 
-export default function PresentationView({ players, trainers, lineup, onBack }: Props) {
+export default function PresentationView({ players, trainers, lineup }: Props) {
   const [mainPhase, setMainPhase] = useState<MainPhase>('intro');
   const [spotIdx, setSpotIdx] = useState(-1);
   const [spotState, setSpotState] = useState<SpotState>('entering');
@@ -354,7 +353,6 @@ export default function PresentationView({ players, trainers, lineup, onBack }: 
       {/* ===== CONTROLS ===== */}
       <div className="pres-controls">
         <button className="pres-ctrl-btn" onClick={handleRestart}>⟳ <span>Neustart</span></button>
-        <button className="pres-ctrl-btn" onClick={onBack}>← <span>Zurück</span></button>
         <button className="pres-ctrl-btn" onClick={handleFullscreen}>⛶ <span>Vollbild</span></button>
         <button className="pres-ctrl-btn pres-ctrl-share" onClick={handleShare}>⬆ <span>Teilen</span></button>
       </div>
