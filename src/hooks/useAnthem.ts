@@ -10,7 +10,7 @@ export function useAnthem() {
     if (!audioRef.current) {
       const a = new Audio();
       a.loop = true;
-      a.volume = 0.65;
+      a.volume = 0.32;
       a.preload = 'auto';
       a.src = ANTHEM_SRC;
       a.load();

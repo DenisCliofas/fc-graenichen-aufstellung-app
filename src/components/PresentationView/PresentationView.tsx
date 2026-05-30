@@ -42,9 +42,15 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
   const [arrivingPos, setArrivingPos] = useState<PositionKey | null>(null);
   const [allPlaced, setAllPlaced] = useState(false);
   const [key, setKey] = useState(0);
-  const [musicOn, setMusicOn] = useState(false);
+  const [musicOn, setMusicOn] = useState(true);
 
   const anthem = useAnthem();
+
+  // Auto-start music (works because user navigated here via a click/tap)
+  useEffect(() => {
+    anthem.start();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const starters = STARTER_ORDER
     .map(posKey => {
