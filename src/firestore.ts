@@ -4,16 +4,21 @@ import { Player, Trainer, Lineup } from './types';
 
 const COLLECTION = 'roster';
 
+// Firestore rejects `undefined` — strip it recursively before saving
+function stripUndefined<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 export function savePlayersToFirestore(players: Player[]): void {
-  setDoc(doc(db, COLLECTION, 'players'), { data: players }).catch(console.error);
+  setDoc(doc(db, COLLECTION, 'players'), { data: stripUndefined(players) }).catch(console.error);
 }
 
 export function saveTrainersToFirestore(trainers: Trainer[]): void {
-  setDoc(doc(db, COLLECTION, 'trainers'), { data: trainers }).catch(console.error);
+  setDoc(doc(db, COLLECTION, 'trainers'), { data: stripUndefined(trainers) }).catch(console.error);
 }
 
 export function saveLineupToFirestore(lineup: Lineup): void {
-  setDoc(doc(db, COLLECTION, 'lineup'), { data: lineup }).catch(console.error);
+  setDoc(doc(db, COLLECTION, 'lineup'), { data: stripUndefined(lineup) }).catch(console.error);
 }
 
 export type RosterSnapshot = {
