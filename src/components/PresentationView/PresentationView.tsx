@@ -42,7 +42,7 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
   const [arrivingPos, setArrivingPos] = useState<PositionKey | null>(null);
   const [allPlaced, setAllPlaced] = useState(false);
   const [key, setKey] = useState(0);
-  const [musicOn, setMusicOn] = useState(true);
+  const [musicOn, setMusicOn] = useState(false);
 
   const anthem = useAnthem();
 
@@ -140,9 +140,13 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
   }, []);
 
   const handleMusicToggle = useCallback(() => {
-    const next = !musicOn;
-    anthem.setMuted(!next);
-    setMusicOn(next);
+    if (!musicOn) {
+      anthem.play();
+      setMusicOn(true);
+    } else {
+      anthem.pause();
+      setMusicOn(false);
+    }
   }, [musicOn, anthem]);
 
   const handleFullscreen = () => {
