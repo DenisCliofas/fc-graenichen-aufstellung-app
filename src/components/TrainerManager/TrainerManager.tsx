@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Trainer } from '../../types';
 import PhotoCropper from '../PhotoCropper/PhotoCropper';
+import { avatarSrc } from '../../utils/avatar';
 import '../PlayerManager/PlayerManager.css';
 
 interface Props {
@@ -21,20 +22,13 @@ function generateId(): string {
 }
 
 function TrainerAvatar({ trainer }: { trainer: Trainer }) {
-  if (trainer.photoUrl) {
-    return (
-      <img
-        className="player-avatar player-avatar-photo"
-        src={trainer.photoUrl}
-        alt={`${trainer.firstName} ${trainer.lastName}`}
-        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-      />
-    );
-  }
   return (
-    <div className="player-avatar player-avatar-number">
-      <span>🎽</span>
-    </div>
+    <img
+      className="player-avatar player-avatar-photo"
+      src={avatarSrc(trainer.photoUrl)}
+      alt={`${trainer.firstName} ${trainer.lastName}`}
+      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+    />
   );
 }
 

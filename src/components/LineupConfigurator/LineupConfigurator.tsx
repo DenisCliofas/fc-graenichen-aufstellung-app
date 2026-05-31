@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Player, Trainer, Lineup, LineupStarters, PositionKey, POSITION_LABELS } from '../../types';
 import FieldView from '../FieldView/FieldView';
 import PlayerSelectModal from '../PlayerSelectModal/PlayerSelectModal';
+import { avatarSrc } from '../../utils/avatar';
 import './LineupConfigurator.css';
 
 interface Props {
@@ -150,11 +151,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                     {player ? (
                       <div className="sub-slot-filled" onClick={() => handleSubSlotClick(i)} style={{ cursor: 'pointer' }}>
                         <div className="sub-avatar">
-                          {player.photoUrl ? (
-                            <img src={player.photoUrl} alt="" className="sub-avatar-img" />
-                          ) : (
-                            <span>{player.number}</span>
-                          )}
+                          <img src={avatarSrc(player.photoUrl)} alt="" className="sub-avatar-img" />
                         </div>
                         <span className="sub-name">
                           {player.firstName.charAt(0)}. {player.lastName.toUpperCase()}
@@ -220,10 +217,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                       onClick={() => toggleCoach(trainer.id)}
                       title={isSelected ? 'Aus Aufstellung entfernen' : 'Zur Aufstellung hinzufügen'}
                     >
-                      {trainer.photoUrl
-                        ? <img src={trainer.photoUrl} alt="" className="coach-avatar-thumb" />
-                        : <span className="absent-number">🎽</span>
-                      }
+                      <img src={avatarSrc(trainer.photoUrl)} alt="" className="coach-avatar-thumb" />
                       <span className="absent-name">
                         {trainer.firstName} {trainer.lastName}
                         {trainer.role && <span className="coach-role-tag"> · {trainer.role}</span>}
@@ -255,10 +249,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                   {captain ? (
                     <div className="captain-current">
                       <div className="captain-avatar">
-                        {captain.photoUrl
-                          ? <img src={captain.photoUrl} alt="" />
-                          : <span>{captain.number}</span>
-                        }
+                        <img src={avatarSrc(captain.photoUrl)} alt="" />
                         <div className="captain-c-badge">C</div>
                       </div>
                       <span className="captain-name">{captain.firstName} {captain.lastName.toUpperCase()}</span>

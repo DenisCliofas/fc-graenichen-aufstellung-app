@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Player } from '../../types';
+import { avatarSrc } from '../../utils/avatar';
 import './PlayerSelectModal.css';
 
 interface Props {
@@ -59,11 +60,7 @@ export default function PlayerSelectModal({ players, assignedIds, onSelect, onCl
                 disabled={isAssigned}
               >
                 <div className={`modal-avatar${isAssigned ? ' assigned' : ''}`}>
-                  {player.photoUrl ? (
-                    <img src={player.photoUrl} alt="" className="modal-avatar-img" />
-                  ) : (
-                    <span>{player.number}</span>
-                  )}
+                  <img src={avatarSrc(player.photoUrl)} alt="" className="modal-avatar-img" />
                 </div>
                 <div className="modal-player-info">
                   <span className="modal-player-name">

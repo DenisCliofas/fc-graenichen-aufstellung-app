@@ -3,6 +3,7 @@ import { Player, Trainer, Lineup, PositionKey, POSITION_LABELS } from '../../typ
 import './PresentationView.css';
 import logoSvg from '../../assets/logo.svg';
 import { useAnthem } from '../../hooks/useAnthem';
+import { avatarSrc } from '../../utils/avatar';
 
 interface Props {
   players: Player[];
@@ -252,10 +253,7 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
                     style={{ top: `${top}%`, left: `${left}%` }}
                   >
                     <div className="pres-ptoken-circle">
-                      {player.photoUrl
-                        ? <img src={player.photoUrl} alt="" />
-                        : <span>{player.number}</span>
-                      }
+                      <img src={avatarSrc(player.photoUrl)} alt="" />
                       {isCaptain && <div className="pres-captain-badge">C</div>}
                     </div>
                     <div className="pres-ptoken-name">{player.lastName.toUpperCase()}</div>
@@ -273,13 +271,10 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
                 <div className="pres-spotlight-inner">
                   <div className="pres-spot-pos">{POSITION_LABELS[entry.posKey]}</div>
                   <div className="pres-spot-circle">
-                    {entry.player.photoUrl
-                      ? <>
-                          <img src={entry.player.photoUrl} alt="" />
-                          <div className="pres-spot-num-badge">{entry.player.number}</div>
-                        </>
-                      : <span className="pres-spot-num">{entry.player.number}</span>
-                    }
+                    <>
+                      <img src={avatarSrc(entry.player.photoUrl)} alt="" />
+                      <div className="pres-spot-num-badge">{entry.player.number}</div>
+                    </>
                     {lineup.captain === entry.player.id && (
                       <div className="pres-spot-captain-badge">C</div>
                     )}
@@ -313,14 +308,9 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
                   style={{ animationDelay: `${i * 0.5}s` }}>
                   <div className="pres-card-avatar-wrap">
                     <div className="pres-card-number">
-                      {player.photoUrl
-                        ? <img src={player.photoUrl} alt="" className="pres-card-photo" />
-                        : <span>{player.number}</span>
-                      }
+                      <img src={avatarSrc(player.photoUrl)} alt="" className="pres-card-photo" />
                     </div>
-                    {player.photoUrl && (
-                      <div className="pres-card-number-badge">{player.number}</div>
-                    )}
+                    <div className="pres-card-number-badge">{player.number}</div>
                     {lineup.captain === player.id && (
                       <div className="pres-captain-badge">C</div>
                     )}
@@ -342,10 +332,7 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
                     if (!trainer) return null;
                     return (
                       <span key={coachId} className="pres-coach-name">
-                        {trainer.photoUrl
-                          ? <img src={trainer.photoUrl} alt="" className="pres-coach-avatar" />
-                          : '🎽'
-                        }
+                        <img src={avatarSrc(trainer.photoUrl)} alt="" className="pres-coach-avatar" />
                         {' '}{trainer.firstName} {trainer.lastName}
                         {trainer.role && <span className="pres-coach-role"> · {trainer.role}</span>}
                       </span>

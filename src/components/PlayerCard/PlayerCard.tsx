@@ -1,4 +1,5 @@
 import { Player } from '../../types';
+import { avatarSrc } from '../../utils/avatar';
 import './PlayerCard.css';
 
 interface Props {
@@ -12,26 +13,11 @@ export default function PlayerCard({ player, position, size = 'md', showPosition
   return (
     <div className={`player-card player-card-${size}`}>
       <div className="player-card-number">
-        {player.photoUrl ? (
-          <img
-            src={player.photoUrl}
-            alt={`${player.firstName} ${player.lastName}`}
-            className="player-card-photo"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              const parent = target.parentElement;
-              if (parent) {
-                parent.classList.add('number-fallback');
-                const span = document.createElement('span');
-                span.textContent = String(player.number);
-                parent.appendChild(span);
-              }
-            }}
-          />
-        ) : (
-          <span>{player.number}</span>
-        )}
+        <img
+          src={avatarSrc(player.photoUrl)}
+          alt={`${player.firstName} ${player.lastName}`}
+          className="player-card-photo"
+        />
       </div>
       <div className="player-card-info">
         <div className="player-card-name">

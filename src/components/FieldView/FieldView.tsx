@@ -1,4 +1,5 @@
 import { Player, LineupStarters, PositionKey, POSITION_LABELS, POSITION_SHORT } from '../../types';
+import { avatarSrc } from '../../utils/avatar';
 import './FieldView.css';
 
 interface PositionSlotProps {
@@ -19,11 +20,7 @@ function PositionSlot({ posKey, playerId, players, onClick, onClear }: PositionS
       {player ? (
         <div className="slot-filled" onClick={() => onClick(posKey)} style={{ cursor: 'pointer' }}>
           <div className="slot-avatar">
-            {player.photoUrl ? (
-              <img src={player.photoUrl} alt="" className="slot-avatar-img" />
-            ) : (
-              <span className="slot-number">{player.number}</span>
-            )}
+            <img src={avatarSrc(player.photoUrl)} alt="" className="slot-avatar-img" />
           </div>
           <div className="slot-player-name">
             {player.firstName.charAt(0)}. {player.lastName.toUpperCase()}
