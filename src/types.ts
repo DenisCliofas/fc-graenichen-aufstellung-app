@@ -16,15 +16,9 @@ export type Trainer = {
   notes?: string;
 };
 
-export type LineupStarters = {
-  goalkeeper?: string;
-  leftDefense?: string;
-  centerDefense?: string;
-  rightDefense?: string;
-  leftWing?: string;
-  striker?: string;
-  rightWing?: string;
-};
+export type PositionKey = string;
+
+export type LineupStarters = Record<string, string | undefined>;
 
 export type Lineup = {
   starters: LineupStarters;
@@ -33,29 +27,27 @@ export type Lineup = {
   coaches: string[];
   captain?: string;
   opponent?: string;
-  matchDate?: string; // ISO date string YYYY-MM-DD
+  matchDate?: string;
+  formationId?: string;
 };
 
-export type AppTab = 'trainers' | 'players' | 'lineup';
-
-export type PositionKey = keyof LineupStarters;
-
-export const POSITION_LABELS: Record<PositionKey, string> = {
-  goalkeeper: 'Tor',
-  leftDefense: 'Verteidiger links',
-  centerDefense: 'Libero',
-  rightDefense: 'Verteidiger rechts',
-  leftWing: 'Mittelfeld links',
-  striker: 'Mittelfeld',
-  rightWing: 'Mittelfeld rechts',
+export type TeamSettings = {
+  teamName: string;
+  shortName: string;
+  primaryColor: string;
+  secondaryColor: string;
+  logoUrl?: string;
+  language?: string;
+  playerCount?: 7 | 9 | 11;
 };
 
-export const POSITION_SHORT: Record<PositionKey, string> = {
-  goalkeeper: 'TOR',
-  leftDefense: 'VL',
-  centerDefense: 'LIB',
-  rightDefense: 'VR',
-  leftWing: 'ML',
-  striker: 'MF',
-  rightWing: 'MR',
+export const DEFAULT_SETTINGS: TeamSettings = {
+  teamName: 'FC Gränichen',
+  shortName: 'FCG',
+  primaryColor: '#FFD400',
+  secondaryColor: '#050505',
+  language: 'de',
+  playerCount: 11,
 };
+
+export type AppTab = 'trainers' | 'players' | 'lineup' | 'settings';
