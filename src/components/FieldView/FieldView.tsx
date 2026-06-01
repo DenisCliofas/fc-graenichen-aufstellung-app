@@ -1,24 +1,27 @@
-import { Player, LineupStarters, PositionKey, POSITION_LABELS, POSITION_SHORT } from '../../types';
+import { useTranslation } from 'react-i18next';
+import { Player, LineupStarters, PositionKey } from '../../types';
+import { FormationConfig, PositionDef } from '../../formations';
 import { avatarSrc } from '../../utils/avatar';
 import './FieldView.css';
 
 interface PositionSlotProps {
-  posKey: PositionKey;
+  positionDef: PositionDef;
   playerId?: string;
   players: Player[];
   onClick: (posKey: PositionKey) => void;
   onClear: (posKey: PositionKey) => void;
 }
 
-function PositionSlot({ posKey, playerId, players, onClick, onClear }: PositionSlotProps) {
+function PositionSlot({ positionDef, playerId, players, onClick, onClear }: PositionSlotProps) {
+  const { t } = useTranslation();
   const player = playerId ? players.find(p => p.id === playerId) : undefined;
-  const label = POSITION_SHORT[posKey];
-  const fullLabel = POSITION_LABELS[posKey];
+  const label = positionDef.short;
+  const fullLabel = t(positionDef.labelKey);
 
   return (
     <div className={`position-slot${player ? ' filled' : ' empty'}`} title={fullLabel}>
       {player ? (
-        <div className="slot-filled" onClick={() => onClick(posKey)} style={{ cursor: 'pointer' }}>
+        <div className="slot-filled" onClick={() => onClick(positionDef.key)} style={{ cursor: 'pointer' }}>
           <div className="slot-avatar">
             <img src={avatarSrc(player.photoUrl)} alt="" className="slot-avatar-img" />
           </div>
@@ -28,14 +31,14 @@ function PositionSlot({ posKey, playerId, players, onClick, onClear }: PositionS
           <div className="slot-pos-badge">{label}</div>
           <button
             className="slot-clear-btn"
-            onClick={(e) => { e.stopPropagation(); onClear(posKey); }}
-            aria-label="Spieler entfernen"
+            onClick={(e) => { e.stopPropagation(); onClear(positionDef.key); }}
+            aria-label={t('remove_player')}
           >
             ✕
           </button>
         </div>
       ) : (
-        <button className="slot-empty-btn" onClick={() => onClick(posKey)}>
+        <button className="slot-empty-btn" onClick={() => onClick(positionDef.key)}>
           <span className="slot-pos-label">{label}</span>
           <span className="slot-add-icon">+</span>
         </button>
@@ -47,44 +50,42 @@ function PositionSlot({ posKey, playerId, players, onClick, onClear }: PositionS
 interface Props {
   starters: LineupStarters;
   players: Player[];
+  formation: FormationConfig;
   onSlotClick: (posKey: PositionKey) => void;
   onSlotClear: (posKey: PositionKey) => void;
 }
 
-export default function FieldView({ starters, players, onSlotClick, onSlotClear }: Props) {
+export default function FieldView({ starters, players, formation, onSlotClick, onSlotClear }: Props) {
+  const { t } = useTranslation();
+  const positionedSlots = [...formation.rows]
+    .reverse()
+    .flatMap((row) => row.map((positionDef) => ({ positionDef, isWide: row.length >= 4 })));
+
   return (
     <div className="field-container">
-      <div className="field">
+      <div className="field field--absolute">
         {/* Field markings */}
         <div className="field-center-circle" />
         <div className="field-center-line" />
         <div className="field-penalty-top" />
         <div className="field-penalty-bottom" />
-        <div className="field-label">AUFSTELLUNG</div>
+        <div className="field-label">{t('field_label')}</div>
 
-        {/* Formation 1-3-3: GK → 3 defenders (libero slightly higher) → 3 midfielders */}
-        <div className="field-row field-row-mid">
-          <PositionSlot posKey="leftWing" playerId={starters.leftWing} players={players}
-            onClick={onSlotClick} onClear={onSlotClear} />
-          <PositionSlot posKey="striker" playerId={starters.striker} players={players}
-            onClick={onSlotClick} onClear={onSlotClear} />
-          <PositionSlot posKey="rightWing" playerId={starters.rightWing} players={players}
-            onClick={onSlotClick} onClear={onSlotClear} />
-        </div>
-
-        <div className="field-row field-row-defense">
-          <PositionSlot posKey="leftDefense" playerId={starters.leftDefense} players={players}
-            onClick={onSlotClick} onClear={onSlotClear} />
-          <PositionSlot posKey="centerDefense" playerId={starters.centerDefense} players={players}
-            onClick={onSlotClick} onClear={onSlotClear} />
-          <PositionSlot posKey="rightDefense" playerId={starters.rightDefense} players={players}
-            onClick={onSlotClick} onClear={onSlotClear} />
-        </div>
-
-        <div className="field-row field-row-gk">
-          <PositionSlot posKey="goalkeeper" playerId={starters.goalkeeper} players={players}
-            onClick={onSlotClick} onClear={onSlotClear} />
-        </div>
+        {positionedSlots.map(({ positionDef, isWide }) => (
+          <div
+            key={positionDef.key}
+            className={`field-position${isWide ? ' field-position--wide' : ''}`}
+            style={{ top: `${positionDef.fieldPos[0]}%`, left: `${positionDef.fieldPos[1]}%` }}
+          >
+            <PositionSlot
+              positionDef={positionDef}
+              playerId={starters[positionDef.key]}
+              players={players}
+              onClick={onSlotClick}
+              onClear={onSlotClear}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

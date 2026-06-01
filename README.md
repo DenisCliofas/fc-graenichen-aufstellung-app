@@ -1,33 +1,95 @@
-# FC Gränichen – Aufstellungs-App
+﻿# Aufstellungs-App
 
-Eine animierte Web-App für den FC Gränichen, um Fussball-Aufstellungen für 7-gegen-7-Spiele zu erstellen und zu präsentieren.
+Eine animierte Web-App um Fussball-Aufstellungen (7-gegen-7) zu erstellen und zu prasentieren. Jedes Team bekommt eine eigene, isolierte URL — keine Installation, kein Login.
 
-🔗 **Live:** https://deniscliofas.github.io/fc-graenichen-aufstellung-app/
+Unterstuetzte Sprachen: Deutsch, English, Francais, Italiano.
+
+Live: https://deniscliofas.github.io/fc-graenichen-aufstellung-app/
+
+## So funktioniert es
+
+1. Offne die App-URL und wahle deine Sprache
+2. Gib ein **Team-Kurzel** ein (z.B. `fc-aarau-2025`) — das ist dein persoenlicher Schlussel
+3. Beim ersten Besuch landest du im Editor in den Einstellungen (Teamname, Farben, Logo)
+4. Beim nachsten Besuch (Kurzel bereits bekannt) landest du direkt auf der Aufstellung
+
+> **Wichtig:** Merke dir dein Kurzel. Es gibt kein Passwort und keine Wiederherstellung. Wer die Editor-URL kennt, kann die Daten bearbeiten — teile nur die Aufstellungs-URL mit Fans.
+
+### Deine URLs
+
+| URL | Beschreibung |
+|-----|-------------|
+| `/` | Startseite — Kurzel eingeben |
+| `/{kurzel}/presentation` | Offentliche Prasentation — fur alle Eltern und Spieler |
+| `/{kurzel}/editor` | Trainer-Editor — nur fur Trainer (URL nicht teilen!) |
+
+**Beispiel:** `.../fc-aarau-2025/editor` und `.../fc-aarau-2025/presentation`
+
+## Verwendung
+
+### 1. Team einrichten (Editor -> Einstellungen)
+- Teamname, Kurzname, Primar- und Sekundarfarbe, Logo und Sprache festlegen
+- Anderungen werden sofort in der Prasentation sichtbar
+- Die Sprache lasst sich auch auf der Startseite wahlen
+
+### 2. Trainer verwalten (Editor -> Trainer)
+- Trainer mit Vor-/Nachname, Rolle (z.B. "Haupttrainer") und optionalem Foto erfassen
+- Foto per Upload & Zuschneiden (1:1-Crop) direkt im Browser
+
+### 3. Spieler verwalten (Editor -> Spieler)
+- Spieler mit Trikotnummer, Vor-/Nachname und optionalem Foto hinzufugen
+- Foto per Upload & Zuschneiden (1:1-Crop) direkt im Browser
+
+### 4. Aufstellung konfigurieren (Editor -> Aufstellung)
+- Klick auf eine Position offnet das Spieler-Auswahl-Modal
+- Ersatzspieler (bis zu 6) und abwesende Spieler verwalten
+- Trainer per Klick als "Dabei" / "Nicht dabei" markieren
+- **Captain** wahlen — wird in der Prasentation visuell hervorgehoben
+- **Spieldaten**: Gegner und Datum eingeben — erscheinen auf dem Intro-Screen
+- Button "Prasentation starten"
+
+### 5. Prasentation (`/{kurzel}/presentation`)
+- **Intro**: Team-Logo + Name + Gegner + Datum
+- **Spieler-Spotlight**: Jeder Startspieler wird kurz gross gezeigt, fliegt dann auf seine Position im Feld
+- **Ersatzspieler**: Alle Ersatzspieler mit Foto und Nummer
+- **Abschluss**: "Hopp [Teamname]!" mit Logo
+- Steuerelemente: Neustart · Vollbild · Musik · Teilen
 
 ## Tech Stack
 
 - **React 18** + **TypeScript**
 - **Vite** (Build-Tool)
 - **React Router v7** (client-side routing)
-- **Firebase Firestore** (Echtzeit-Datenbank für Cloud-Sync)
+- **Firebase Firestore** (Echtzeit-Datenbank, isoliert pro Team-Kurzel)
+- **react-i18next** (Mehrsprachigkeit: DE / EN / FR / IT)
 - **CSS** (keine externen UI-Bibliotheken)
 - **Google Fonts**: Bebas Neue + Barlow Condensed
 
-## URLs
+## Cloud-Sync (Firebase Firestore)
 
-| URL | Beschreibung |
-|-----|-------------|
-| `/presentation` | Öffentliche Präsentation – für alle Eltern und Spieler |
-| `/editor` | Trainer-Editor – nur für Trainer (URL nicht teilen) |
+Alle Daten werden pro Team-Kurzel isoliert in Firebase Firestore gespeichert.
 
-## Setup
+- Trainer erfassen die Aufstellung auf dem Laptop -> Daten automatisch in der Cloud
+- Prasentation auf dem Beamer oder Handy offnen -> Daten werden live aus der Cloud geladen
+- Mehrere Trainer konnen gleichzeitig Anderungen vornehmen
+- Zwei Teams mit unterschiedlichen Kurzeln teilen **keine** Daten
+
+## Formation (1-3-3, 7-gegen-7)
+
+```
+   [MF links] [Mittelfeld] [MF rechts]
+  [V-links]   [Libero]   [V-rechts]
+               [Tor]
+```
+
+## Setup (lokal entwickeln)
 
 ```bash
 npm install
 npm run dev
 ```
 
-Öffne http://localhost:5173 im Browser.  
+Offne http://localhost:5173 im Browser.
 Oder einfach `start.bat` doppelklicken.
 
 ## Build & Deploy
@@ -41,60 +103,6 @@ npm run preview
 npm run deploy
 ```
 
-## Verwendung
-
-### 1. Trainer verwalten (Editor → Tab „Trainer")
-- Trainer mit Vor-/Nachname, Rolle (z.B. „Haupttrainer") und optionalem Foto erfassen
-- Foto per Upload & Zuschneiden (1:1-Crop) direkt im Browser
-- Trainer bearbeiten oder löschen
-
-### 2. Spieler verwalten (Editor → Tab „Spieler")
-- Spieler mit Trikotnummer, Vor-/Nachname und optionalem Foto hinzufügen
-- Foto per Upload & Zuschneiden (1:1-Crop) direkt im Browser
-- Spieler bearbeiten oder löschen
-
-### 3. Aufstellung konfigurieren (Editor → Tab „Aufstellung")
-- Klick auf eine Position öffnet das Spieler-Auswahl-Modal
-- **Direktes Umbesetzen**: Klick auf einen bereits besetzten Slot öffnet ebenfalls das Modal (kein Leeren nötig)
-- Ersatzspieler (bis zu 6) und abwesende Spieler verwalten
-- Trainer per Klick als „Dabei" / „Nicht dabei" markieren
-- **Captain** wählen – wird in der Präsentation visuell hervorgehoben
-- **Spieldaten**: Gegner und Datum eingeben – erscheinen auf dem Intro-Screen
-- Button „Präsentation starten"
-
-### 4. Präsentation (`/presentation`)
-- **Intro**: FC Gränichen Logo + Name + Gegner + Datum
-- **Spieler-Spotlight**: Jeder Startspieler wird kurz gross gezeigt (mit Captain-Badge falls zutreffend), fliegt dann auf seine Position im Feld
-- **Ersatzspieler**: Alle Ersatzspieler mit Foto und Nummer
-- **Abschluss**: „Hopp FC Gränichen!" mit Logo
-- Steuerelemente: Neustart · Vollbild · **Teilen** (Web Share API, Fallback: Link kopieren)
-
-## Cloud-Sync (Firebase Firestore)
-
-Alle Daten (Spieler, Trainer, Aufstellung) werden in Firebase Firestore gespeichert und sind damit auf allen Geräten verfügbar.
-
-- Trainer erfassen die Aufstellung auf dem Laptop → Daten automatisch in der Cloud
-- Präsentation auf dem Beamer oder Handy öffnen → Daten werden live aus der Cloud geladen
-- Mehrere Trainer können gleichzeitig vom Editor aus Änderungen vornehmen
-
-## Formation (1-3-3, 7-gegen-7)
-
-```
-   [MF links] [Mittelfeld] [MF rechts]
-  [V-links]   [Libero]   [V-rechts]
-               [Tor]
-```
-
-## Vereinslogo
-
-SVG unter `public/logo.svg`, PNG unter `public/logo.png` (für WhatsApp-Vorschau).  
-Das Logo verlinkt auf https://www.fcgraenichen.ch.
-
-## Spielerfotos / Trainerfotos
-
-Fotos direkt in der App hochladen und zuschneiden (Knopf „📷 Foto hochladen").  
-Die Bilder werden als JPEG (400×400px) in localStorage **und** Firebase gespeichert.
-
 ## Lizenz
 
-Privates Projekt – FC Gränichen
+Open source — nutzbar fur beliebige Amateurteams.

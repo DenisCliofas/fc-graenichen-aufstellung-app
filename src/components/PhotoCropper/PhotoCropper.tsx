@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './PhotoCropper.css';
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
 const MIN_SIZE = 60;
 
 export default function PhotoCropper({ onSave, onCancel, existingPhoto }: Props) {
+  const { t } = useTranslation();
   const [imgSrc, setImgSrc] = useState<string | null>(existingPhoto ?? null);
   const [crop, setCrop] = useState({ x: 0, y: 0, size: 200 });
   const imgRef = useRef<HTMLImageElement>(null);
@@ -93,17 +95,17 @@ export default function PhotoCropper({ onSave, onCancel, existingPhoto }: Props)
     <div className="photo-cropper-overlay">
       <div className="photo-cropper-modal">
         <div className="photo-cropper-header">
-          <span className="photo-cropper-title">Foto hochladen & zuschneiden</span>
+          <span className="photo-cropper-title">{t('photo_cropper_title')}</span>
           <button className="photo-cropper-close" onClick={onCancel}>✕</button>
         </div>
 
         {!imgSrc ? (
           <div className="photo-cropper-upload">
             <label className="photo-upload-btn">
-              📷 Foto auswählen
+              {t('photo_select')}
               <input type="file" accept="image/*" onChange={handleFile} hidden />
             </label>
-            <p className="photo-upload-hint">JPG, PNG oder HEIC vom Gerät oder Kamera</p>
+            <p className="photo-upload-hint">{t('photo_upload_hint')}</p>
           </div>
         ) : (
           <>
@@ -145,11 +147,11 @@ export default function PhotoCropper({ onSave, onCancel, existingPhoto }: Props)
 
             <div className="photo-cropper-footer">
               <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer' }}>
-                Anderes Foto
+                {t('photo_change_file')}
                 <input type="file" accept="image/*" onChange={handleFile} hidden />
               </label>
               <button className="btn btn-primary" onClick={handleSave}>
-                ✓ Zuschneiden & Speichern
+                {t('photo_crop_save')}
               </button>
             </div>
           </>

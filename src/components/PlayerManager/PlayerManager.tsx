@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Player } from '../../types';
 import PhotoCropper from '../PhotoCropper/PhotoCropper';
 import { avatarSrc } from '../../utils/avatar';
@@ -33,6 +34,7 @@ function PlayerAvatar({ player }: { player: Player }) {
 }
 
 export default function PlayerManager({ players, onUpdatePlayers }: Props) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState(EMPTY_FORM);
@@ -44,10 +46,10 @@ export default function PlayerManager({ players, onUpdatePlayers }: Props) {
   const sortedPlayers = [...players].sort((a, b) => a.number - b.number);
 
   const validateForm = (f: typeof EMPTY_FORM): string => {
-    if (!f.firstName.trim()) return 'Vorname ist erforderlich.';
-    if (!f.lastName.trim()) return 'Nachname ist erforderlich.';
+    if (!f.firstName.trim()) return t('error_firstname_required');
+    if (!f.lastName.trim()) return t('error_lastname_required');
     const num = parseInt(f.number);
-    if (isNaN(num) || num < 1 || num > 99) return 'Nummer muss zwischen 1 und 99 liegen.';
+    if (isNaN(num) || num < 1 || num > 99) return t('error_number_range');
     return '';
   };
 
@@ -56,7 +58,7 @@ export default function PlayerManager({ players, onUpdatePlayers }: Props) {
     if (err) { setFormError(err); return; }
     const numVal = parseInt(form.number);
     if (players.some(p => p.number === numVal)) {
-      setFormError(`Nummer ${numVal} ist bereits vergeben.`);
+      setFormError(t('error_number_taken', { num: numVal }));
       return;
     }
     const newPlayer: Player = {
@@ -110,41 +112,41 @@ export default function PlayerManager({ players, onUpdatePlayers }: Props) {
 
   return (
     <div className="player-manager">
-      <h2 className="section-heading">Spieler verwalten</h2>
+      <h2 className="section-heading">{t('player_manage')}</h2>
 
       {/* Add Player Form */}
       <div className="add-player-card card">
-        <h3 className="add-player-title">Spieler hinzufügen</h3>
+        <h3 className="add-player-title">{t('player_add_title')}</h3>
         {formError && <div className="form-error">{formError}</div>}
         <div className="add-player-form">
           <div className="form-group">
-            <label className="form-label">Vorname</label>
+            <label className="form-label">{t('label_firstname')}</label>
             <input
               className="form-input"
               type="text"
-              placeholder="z.B. Luca"
+              placeholder={t('placeholder_firstname_player')}
               value={form.firstName}
               onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))}
               onKeyDown={e => e.key === 'Enter' && handleAddPlayer()}
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Nachname</label>
+            <label className="form-label">{t('label_lastname')}</label>
             <input
               className="form-input"
               type="text"
-              placeholder="z.B. Müller"
+              placeholder={t('placeholder_lastname_player')}
               value={form.lastName}
               onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))}
               onKeyDown={e => e.key === 'Enter' && handleAddPlayer()}
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Nummer</label>
+            <label className="form-label">{t('label_number')}</label>
             <input
               className="form-input"
               type="number"
-              placeholder="1–99"
+              placeholder={t('placeholder_number')}
               min={1}
               max={99}
               value={form.number}
@@ -153,13 +155,13 @@ export default function PlayerManager({ players, onUpdatePlayers }: Props) {
             />
           </div>
           <div className="form-group form-group-wide">
-            <label className="form-label">Foto (optional)</label>
+            <label className="form-label">{t('label_photo_optional')}</label>
             <div className="photo-field">
               {form.photoUrl && (
                 <img src={form.photoUrl} alt="" className="photo-thumb" />
               )}
               <button type="button" className="btn btn-secondary btn-sm" onClick={() => setCropperTarget('add')}>
-                {form.photoUrl ? '✎ Foto ändern' : '📷 Foto hochladen'}
+                {form.photoUrl ? t('photo_change') : t('photo_upload')}
               </button>
               {form.photoUrl && (
                 <button type="button" className="btn btn-danger btn-sm" onClick={() => setForm(f => ({ ...f, photoUrl: '' }))}>
@@ -169,18 +171,18 @@ export default function PlayerManager({ players, onUpdatePlayers }: Props) {
             </div>
           </div>
           <div className="form-group form-group-wide">
-            <label className="form-label">Notizen (optional)</label>
+            <label className="form-label">{t('label_notes_optional')}</label>
             <input
               className="form-input"
               type="text"
-              placeholder="z.B. Torhüter, Kapitän..."
+              placeholder={t('placeholder_notes_player')}
               value={form.notes}
               onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
             />
           </div>
           <div className="add-player-btn-row">
             <button className="btn btn-primary btn-lg" onClick={handleAddPlayer}>
-              + Spieler hinzufügen
+              {t('player_add_btn')}
             </button>
           </div>
         </div>
@@ -189,13 +191,13 @@ export default function PlayerManager({ players, onUpdatePlayers }: Props) {
       {/* Player Count */}
       <div className="player-count">
         <span className="badge">{players.length}</span>
-        <span>Spieler im Kader</span>
+        <span>{t('player_count')}</span>
       </div>
 
       {/* Player List */}
       <div className="player-list">
         {sortedPlayers.length === 0 && (
-          <div className="empty-state">Noch keine Spieler vorhanden. Füge oben Spieler hinzu.</div>
+          <div className="empty-state">{t('player_empty')}</div>
         )}
         {sortedPlayers.map(player => (
           <div key={player.id} className="player-row card">
@@ -205,26 +207,26 @@ export default function PlayerManager({ players, onUpdatePlayers }: Props) {
                 <div className="edit-fields">
                   <div className="edit-fields-row">
                     <div className="form-group">
-                      <label className="form-label">Vorname</label>
+                      <label className="form-label">{t('label_firstname')}</label>
                       <input className="form-input" type="text" value={editForm.firstName}
                         onChange={e => setEditForm(f => ({ ...f, firstName: e.target.value }))} />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Nachname</label>
+                      <label className="form-label">{t('label_lastname')}</label>
                       <input className="form-input" type="text" value={editForm.lastName}
                         onChange={e => setEditForm(f => ({ ...f, lastName: e.target.value }))} />
                     </div>
                     <div className="form-group form-group-num">
-                      <label className="form-label">Nr.</label>
+                      <label className="form-label">{t('label_number_short')}</label>
                       <input className="form-input" type="number" min={1} max={99} value={editForm.number}
                         onChange={e => setEditForm(f => ({ ...f, number: e.target.value }))} />
                     </div>
                     <div className="form-group" style={{ flex: 2 }}>
-                      <label className="form-label">Foto</label>
+                      <label className="form-label">{t('label_photo')}</label>
                       <div className="photo-field">
                         {editForm.photoUrl && <img src={editForm.photoUrl} alt="" className="photo-thumb" />}
                         <button type="button" className="btn btn-secondary btn-sm" onClick={() => setCropperTarget('edit')}>
-                          {editForm.photoUrl ? '✎ Foto ändern' : '📷 Foto hochladen'}
+                          {editForm.photoUrl ? t('photo_change') : t('photo_upload')}
                         </button>
                         {editForm.photoUrl && (
                           <button type="button" className="btn btn-danger btn-sm" onClick={() => setEditForm(f => ({ ...f, photoUrl: '' }))}>
@@ -235,16 +237,16 @@ export default function PlayerManager({ players, onUpdatePlayers }: Props) {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Notizen</label>
+                    <label className="form-label">{t('label_notes')}</label>
                     <input className="form-input" type="text" value={editForm.notes}
                       onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} />
                   </div>
                   <div className="edit-actions">
                     <button className="btn btn-primary btn-sm" onClick={() => handleSaveEdit(player.id)}>
-                      ✓ Speichern
+                      {t('btn_save')}
                     </button>
                     <button className="btn btn-secondary btn-sm" onClick={() => setEditingId(null)}>
-                      Abbrechen
+                      {t('btn_cancel')}
                     </button>
                   </div>
                 </div>
@@ -261,21 +263,21 @@ export default function PlayerManager({ players, onUpdatePlayers }: Props) {
                 <div className="player-actions">
                   {deleteConfirmId === player.id ? (
                     <>
-                      <span className="delete-confirm-text">Löschen?</span>
+                      <span className="delete-confirm-text">{t('confirm_delete')}</span>
                       <button className="btn btn-danger btn-sm" onClick={() => handleDelete(player.id)}>
-                        Ja
+                        {t('confirm_yes')}
                       </button>
                       <button className="btn btn-secondary btn-sm" onClick={() => setDeleteConfirmId(null)}>
-                        Nein
+                        {t('confirm_no')}
                       </button>
                     </>
                   ) : (
                     <>
                       <button className="btn btn-secondary btn-sm" onClick={() => handleStartEdit(player)}>
-                        ✎ Bearbeiten
+                        {t('btn_edit')}
                       </button>
                       <button className="btn btn-danger btn-sm" onClick={() => setDeleteConfirmId(player.id)}>
-                        ✕ Löschen
+                        {t('btn_delete')}
                       </button>
                     </>
                   )}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Player } from '../../types';
 import { avatarSrc } from '../../utils/avatar';
 import './PlayerSelectModal.css';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function PlayerSelectModal({ players, assignedIds, onSelect, onClose, title }: Props) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const filtered = players.filter(p => {
@@ -33,14 +35,14 @@ export default function PlayerSelectModal({ players, assignedIds, onSelect, onCl
     <div className="modal-backdrop" onClick={handleBackdrop}>
       <div className="modal-box">
         <div className="modal-header">
-          <h3 className="modal-title">{title ?? 'Spieler auswählen'}</h3>
-          <button className="modal-close" onClick={onClose} aria-label="Schliessen">✕</button>
+          <h3 className="modal-title">{title ?? t('modal_player_select')}</h3>
+          <button className="modal-close" onClick={onClose} aria-label={t('modal_close_label')}>✕</button>
         </div>
         <div className="modal-search">
           <input
             className="form-input modal-search-input"
             type="text"
-            placeholder="Suche nach Name oder Nummer..."
+            placeholder={t('modal_search_placeholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             autoFocus
@@ -48,7 +50,7 @@ export default function PlayerSelectModal({ players, assignedIds, onSelect, onCl
         </div>
         <div className="modal-player-list">
           {sortedFiltered.length === 0 && (
-            <div className="modal-empty">Keine Spieler gefunden.</div>
+            <div className="modal-empty">{t('modal_empty')}</div>
           )}
           {sortedFiltered.map(player => {
             const isAssigned = assignedIds.has(player.id);
@@ -70,13 +72,13 @@ export default function PlayerSelectModal({ players, assignedIds, onSelect, onCl
                     <span className="modal-player-notes">{player.notes}</span>
                   )}
                 </div>
-                {isAssigned && <span className="modal-assigned-badge">Zugeteilt</span>}
+                {isAssigned && <span className="modal-assigned-badge">{t('modal_assigned_badge')}</span>}
               </button>
             );
           })}
         </div>
         <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>Abbrechen</button>
+          <button className="btn btn-secondary" onClick={onClose}>{t('btn_cancel')}</button>
         </div>
       </div>
     </div>

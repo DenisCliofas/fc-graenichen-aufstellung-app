@@ -1,4 +1,4 @@
-.player-manager {
+﻿.player-manager {
   max-width: 900px;
   margin: 0 auto;
 }
@@ -12,7 +12,7 @@
   font-family: var(--font-display);
   font-size: 1.3rem;
   letter-spacing: 2px;
-  color: var(--black);
+  color: var(--on-surface);
   margin-bottom: 1rem;
   text-transform: uppercase;
 }
@@ -98,7 +98,7 @@
 }
 
 .player-avatar-number {
-  background: var(--black);
+  background: var(--on-surface);
   border: 2px solid var(--yellow);
   display: flex;
   align-items: center;
@@ -124,7 +124,7 @@
 
 .player-name {
   font-size: 1.1rem;
-  color: var(--black);
+  color: var(--on-surface);
   letter-spacing: 0.5px;
 }
 

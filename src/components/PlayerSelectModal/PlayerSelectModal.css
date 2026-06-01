@@ -1,4 +1,4 @@
-.modal-backdrop {
+﻿.modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.85);
@@ -11,7 +11,7 @@
 }
 
 .modal-box {
-  background: var(--white);
+  background: var(--surface);
   border: 2px solid var(--yellow);
   border-radius: 6px;
   width: 100%;
@@ -45,7 +45,7 @@
   font-family: var(--font-display);
   font-size: 1.3rem;
   letter-spacing: 2px;
-  color: var(--black);
+  color: var(--on-surface);
   text-transform: uppercase;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .modal-close:hover {
-  color: var(--black);
+  color: var(--on-surface);
 }
 
 .modal-search {
@@ -97,7 +97,7 @@
   padding: 0.6rem 1.25rem;
   cursor: pointer;
   transition: background 0.15s;
-  color: var(--black);
+  color: var(--on-surface);
 }
 
 .modal-player-row:hover:not(:disabled) {
@@ -113,7 +113,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--black);
+  background: var(--on-surface);
   border: 2px solid var(--yellow);
   display: flex;
   align-items: center;

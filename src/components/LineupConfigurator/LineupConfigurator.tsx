@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { Player, Trainer, Lineup, LineupStarters, PositionKey, POSITION_LABELS } from '../../types';
+﻿import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Player, Trainer, Lineup, PositionKey } from '../../types';
+import { ALL_FORMATIONS, getFormation, getDefaultFormationForCount } from '../../formations';
 import FieldView from '../FieldView/FieldView';
 import PlayerSelectModal from '../PlayerSelectModal/PlayerSelectModal';
 import { avatarSrc } from '../../utils/avatar';
@@ -9,11 +11,13 @@ interface Props {
   players: Player[];
   trainers: Trainer[];
   lineup: Lineup;
+  playerCount: 7 | 9 | 11;
   onUpdateLineup: (lineup: Lineup) => void;
   onStartPresentation: () => void;
 }
 
-export default function LineupConfigurator({ players, trainers, lineup, onUpdateLineup, onStartPresentation }: Props) {
+export default function LineupConfigurator({ players, trainers, lineup, playerCount, onUpdateLineup, onStartPresentation }: Props) {
+  const { t } = useTranslation();
   const [modalContext, setModalContext] = useState<
     | { type: 'starter'; posKey: PositionKey }
     | { type: 'substitute'; slotIndex: number }
@@ -21,7 +25,17 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
     | null
   >(null);
 
-  // Collect all assigned player IDs
+  // Derive formation from lineup or default for player count
+  const availableFormations = ALL_FORMATIONS.filter(f => f.playerCount === playerCount);
+  const formation = lineup.formationId
+    ? getFormation(lineup.formationId)
+    : getDefaultFormationForCount(playerCount);
+
+  const handleFormationChange = (formationId: string) => {
+    if (formationId === formation.id) return;
+    onUpdateLineup({ ...lineup, formationId, starters: {} });
+  };
+
   const getAllAssignedIds = (): Set<string> => {
     const ids = new Set<string>();
     Object.values(lineup.starters).forEach(id => { if (id) ids.add(id); });
@@ -30,7 +44,6 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
     return ids;
   };
 
-  // For modal: exclude slot's current occupant from "assigned" so it can be re-selected
   const getAssignedForModal = (): Set<string> => {
     const ids = getAllAssignedIds();
     if (modalContext?.type === 'starter') {
@@ -69,7 +82,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
     if (modalContext.type === 'starter') {
       onUpdateLineup({
         ...lineup,
-        starters: { ...lineup.starters, [modalContext.posKey]: playerId } as LineupStarters,
+        starters: { ...lineup.starters, [modalContext.posKey]: playerId },
       });
     } else if (modalContext.type === 'substitute') {
       const subs = [...lineup.substitutes];
@@ -83,14 +96,13 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
 
   const toggleAbsent = (playerId: string) => {
     const assignedIds = getAllAssignedIds();
-    if (assignedIds.has(playerId) && !lineup.absent.includes(playerId)) return; // already in starters/subs
+    if (assignedIds.has(playerId) && !lineup.absent.includes(playerId)) return;
 
     if (lineup.absent.includes(playerId)) {
       onUpdateLineup({ ...lineup, absent: lineup.absent.filter(id => id !== playerId) });
     } else {
-      // Remove from starters/subs if present
       const newStarters = { ...lineup.starters };
-      (Object.keys(newStarters) as PositionKey[]).forEach(k => {
+      Object.keys(newStarters).forEach(k => {
         if (newStarters[k] === playerId) newStarters[k] = undefined;
       });
       const newSubs = lineup.substitutes.filter(id => id !== playerId);
@@ -112,8 +124,19 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
   };
 
   const handleReset = () => {
-    if (!confirm('Aufstellung zurücksetzen? Alle Zuweisungen werden gelöscht.')) return;
+    if (!confirm(t('confirm_reset_lineup'))) return;
     onUpdateLineup({ starters: {}, substitutes: [], absent: [], coaches: lineup.coaches });
+  };
+
+  const getModalTitle = () => {
+    if (!modalContext) return '';
+    if (modalContext.type === 'starter') {
+      const allPos = formation.rows.flat();
+      const posDef = allPos.find(p => p.key === modalContext.posKey);
+      return posDef ? t(posDef.labelKey) : modalContext.posKey;
+    }
+    if (modalContext.type === 'substitute') return t('substitute_title', { num: modalContext.slotIndex + 1 });
+    return t('captain_modal_title');
   };
 
   const sortedPlayers = [...players].sort((a, b) => a.number - b.number);
@@ -121,26 +144,38 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
 
   return (
     <div className="lineup-configurator">
-      <h2 className="section-heading">Aufstellung konfigurieren</h2>
+      <div className="lineup-top-bar">
+        <h2 className="section-heading">{t('lineup_configure')}</h2>
+        <div className="formation-picker">
+          {availableFormations.map(f => (
+            <button
+              key={f.id}
+              type="button"
+              className={`formation-btn${formation.id === f.id ? ' active' : ''}`}
+              onClick={() => handleFormationChange(f.id)}
+            >
+              {t(f.labelKey)}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="lineup-layout">
-        {/* Field */}
         <div className="lineup-field-col">
           <FieldView
             starters={lineup.starters}
             players={players}
+            formation={formation}
             onSlotClick={handleSlotClick}
             onSlotClear={handleSlotClear}
           />
         </div>
 
-        {/* Side Panel */}
         <div className="lineup-side-col">
-          {/* Substitutes */}
           <div className="lineup-section card">
             <h3 className="lineup-section-title">
-              Ersatzspieler
-              <span className="lineup-count">{lineup.substitutes.length}/6</span>
+              {t('lineup_substitutes')}
+              <span className="lineup-count">{t('lineup_count_subs', { count: lineup.substitutes.length })}</span>
             </h3>
             <div className="subs-grid">
               {Array.from({ length: 6 }, (_, i) => {
@@ -165,7 +200,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                         disabled={lineup.substitutes.length >= 6 && i >= lineup.substitutes.length}
                       >
                         <span>+</span>
-                        <span className="sub-slot-num">Bank {i + 1}</span>
+                        <span className="sub-slot-num">{t('sub_slot_label', { num: i + 1 })}</span>
                       </button>
                     )}
                   </div>
@@ -174,9 +209,8 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
             </div>
           </div>
 
-          {/* Absent */}
           <div className="lineup-section card">
-            <h3 className="lineup-section-title">Abwesend</h3>
+            <h3 className="lineup-section-title">{t('lineup_absent')}</h3>
             <div className="absent-list">
               {sortedPlayers
                 .filter(player => {
@@ -190,22 +224,21 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                       key={player.id}
                       className={`absent-player-btn${isAbsent ? ' absent' : ''}`}
                       onClick={() => toggleAbsent(player.id)}
-                      title={isAbsent ? 'Als anwesend markieren' : 'Als abwesend markieren'}
+                      title={isAbsent ? t('absent_mark_present') : t('absent_mark_absent')}
                     >
                       <span className="absent-number">{player.number}</span>
                       <span className="absent-name">{player.firstName} {player.lastName}</span>
-                      {isAbsent && <span className="absent-badge">✗ Abwesend</span>}
+                      {isAbsent && <span className="absent-badge">{t('absent_badge')}</span>}
                     </button>
                   );
                 })}
             </div>
           </div>
 
-          {/* Coaches */}
           <div className="lineup-section card">
-            <h3 className="lineup-section-title">Trainer</h3>
+            <h3 className="lineup-section-title">{t('lineup_coaches')}</h3>
             {trainers.length === 0 ? (
-              <span className="empty-coaches">Keine Trainer erfasst. Bitte zuerst Trainer hinzufügen.</span>
+              <span className="empty-coaches">{t('coaches_empty')}</span>
             ) : (
               <div className="absent-list">
                 {trainers.map(trainer => {
@@ -215,7 +248,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                       key={trainer.id}
                       className="absent-player-btn trainer-toggle-btn"
                       onClick={() => toggleCoach(trainer.id)}
-                      title={isSelected ? 'Aus Aufstellung entfernen' : 'Zur Aufstellung hinzufügen'}
+                      title={isSelected ? t('coach_remove_title') : t('coach_add_title')}
                     >
                       <img src={avatarSrc(trainer.photoUrl)} alt="" className="coach-avatar-thumb" />
                       <span className="absent-name">
@@ -223,7 +256,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                         {trainer.role && <span className="coach-role-tag"> · {trainer.role}</span>}
                       </span>
                       <span className={isSelected ? 'trainer-badge trainer-badge-dabei' : 'trainer-badge trainer-badge-nicht'}>
-                        {isSelected ? '✓ Dabei' : '✗ Nicht dabei'}
+                        {isSelected ? t('coach_in_lineup') : t('coach_not_in_lineup')}
                       </span>
                     </button>
                   );
@@ -231,9 +264,9 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
               </div>
             )}
           </div>
-          {/* Captain */}
+
           <div className="lineup-section card">
-            <h3 className="lineup-section-title">Captain</h3>
+            <h3 className="lineup-section-title">{t('lineup_captain')}</h3>
             {(() => {
               const allLineupIds = [
                 ...Object.values(lineup.starters).filter(Boolean) as string[],
@@ -242,7 +275,7 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
               const lineupPlayers = sortedPlayers.filter(p => allLineupIds.includes(p.id));
               const captain = lineup.captain ? players.find(p => p.id === lineup.captain) : undefined;
               if (lineupPlayers.length === 0) {
-                return <span className="empty-coaches">Spieler der Aufstellung hinzufügen, um einen Captain zu wählen.</span>;
+                return <span className="empty-coaches">{t('captain_empty_lineup')}</span>;
               }
               return (
                 <div className="captain-picker">
@@ -253,39 +286,38 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
                         <div className="captain-c-badge">C</div>
                       </div>
                       <span className="captain-name">{captain.firstName} {captain.lastName.toUpperCase()}</span>
-                      <button className="sub-clear-btn" onClick={() => onUpdateLineup({ ...lineup, captain: undefined })} title="Captain abwählen">✕</button>
+                      <button className="sub-clear-btn" onClick={() => onUpdateLineup({ ...lineup, captain: undefined })} title={t('captain_deselect')}>✕</button>
                     </div>
                   ) : (
-                    <span className="empty-coaches">Kein Captain gewählt.</span>
+                    <span className="empty-coaches">{t('captain_not_selected')}</span>
                   )}
                   <button
                     className="btn btn-secondary captain-pick-btn"
                     onClick={() => setModalContext({ type: 'captain' })}
                   >
-                    {captain ? '✏ Captain ändern' : '+ Captain wählen'}
+                    {captain ? t('captain_change') : t('captain_pick')}
                   </button>
                 </div>
               );
             })()}
           </div>
-
         </div>
       </div>
 
       <div className="lineup-actions">
         <div className="lineup-match-info">
           <div className="match-info-field">
-            <label className="match-info-label">Gegner</label>
+            <label className="match-info-label">{t('label_opponent')}</label>
             <input
               className="form-input"
               type="text"
-              placeholder="z.B. FC Suhr"
+              placeholder={t('placeholder_opponent')}
               value={lineup.opponent ?? ''}
               onChange={e => onUpdateLineup({ ...lineup, opponent: e.target.value })}
             />
           </div>
           <div className="match-info-field">
-            <label className="match-info-label">Datum</label>
+            <label className="match-info-label">{t('label_date')}</label>
             <input
               className="form-input"
               type="date"
@@ -296,15 +328,14 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
         </div>
         <div className="lineup-action-btns">
           <button className="btn btn-secondary" onClick={handleReset}>
-            ↺ Aufstellung zurücksetzen
+            {t('btn_reset_lineup')}
           </button>
           <button className="btn btn-primary btn-lg" onClick={onStartPresentation}>
-            ▶ Präsentation starten
+            {t('btn_start_presentation')}
           </button>
         </div>
       </div>
 
-      {/* Modal */}
       {modalContext && (
         <PlayerSelectModal
           players={
@@ -318,15 +349,9 @@ export default function LineupConfigurator({ players, trainers, lineup, onUpdate
           assignedIds={modalContext.type === 'captain' ? new Set() : getAssignedForModal()}
           onSelect={handlePlayerSelect}
           onClose={() => setModalContext(null)}
-          title={
-            modalContext.type === 'starter'
-              ? POSITION_LABELS[modalContext.posKey]
-              : modalContext.type === 'substitute'
-              ? `Ersatzspieler Bank ${modalContext.slotIndex + 1}`
-              : 'Captain wählen'
-          }
+          title={getModalTitle()}
         />
       )}
     </div>
   );
-}
+}

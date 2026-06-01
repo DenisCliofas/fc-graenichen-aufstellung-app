@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trainer } from '../../types';
 import PhotoCropper from '../PhotoCropper/PhotoCropper';
 import { avatarSrc } from '../../utils/avatar';
@@ -33,6 +34,7 @@ function TrainerAvatar({ trainer }: { trainer: Trainer }) {
 }
 
 export default function TrainerManager({ trainers, onUpdateTrainers }: Props) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState(EMPTY_FORM);
@@ -45,8 +47,8 @@ export default function TrainerManager({ trainers, onUpdateTrainers }: Props) {
   );
 
   const validateForm = (f: typeof EMPTY_FORM): string => {
-    if (!f.firstName.trim()) return 'Vorname ist erforderlich.';
-    if (!f.lastName.trim()) return 'Nachname ist erforderlich.';
+    if (!f.firstName.trim()) return t('error_firstname_required');
+    if (!f.lastName.trim()) return t('error_lastname_required');
     return '';
   };
 
@@ -102,39 +104,39 @@ export default function TrainerManager({ trainers, onUpdateTrainers }: Props) {
 
   return (
     <div className="player-manager">
-      <h2 className="section-heading">Trainer verwalten</h2>
+      <h2 className="section-heading">{t('trainer_manage')}</h2>
 
       <div className="add-player-card card">
-        <h3 className="add-player-title">Trainer hinzufügen</h3>
+        <h3 className="add-player-title">{t('trainer_add_title')}</h3>
         {formError && <div className="form-error">{formError}</div>}
         <div className="add-player-form">
           <div className="form-group">
-            <label className="form-label">Vorname</label>
-            <input className="form-input" type="text" placeholder="z.B. Markus"
+            <label className="form-label">{t('label_firstname')}</label>
+            <input className="form-input" type="text" placeholder={t('placeholder_firstname_trainer')}
               value={form.firstName}
               onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))}
               onKeyDown={e => e.key === 'Enter' && handleAddTrainer()} />
           </div>
           <div className="form-group">
-            <label className="form-label">Nachname</label>
-            <input className="form-input" type="text" placeholder="z.B. Müller"
+            <label className="form-label">{t('label_lastname')}</label>
+            <input className="form-input" type="text" placeholder={t('placeholder_lastname_trainer')}
               value={form.lastName}
               onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))}
               onKeyDown={e => e.key === 'Enter' && handleAddTrainer()} />
           </div>
           <div className="form-group">
-            <label className="form-label">Rolle (optional)</label>
-            <input className="form-input" type="text" placeholder="z.B. Haupttrainer"
+            <label className="form-label">{t('label_role_optional')}</label>
+            <input className="form-input" type="text" placeholder={t('placeholder_role')}
               value={form.role}
               onChange={e => setForm(f => ({ ...f, role: e.target.value }))}
               onKeyDown={e => e.key === 'Enter' && handleAddTrainer()} />
           </div>
           <div className="form-group form-group-wide">
-            <label className="form-label">Foto (optional)</label>
+            <label className="form-label">{t('label_photo_optional')}</label>
             <div className="photo-field">
               {form.photoUrl && <img src={form.photoUrl} alt="" className="photo-thumb" />}
               <button type="button" className="btn btn-secondary btn-sm" onClick={() => setCropperTarget('add')}>
-                {form.photoUrl ? '✎ Foto ändern' : '📷 Foto hochladen'}
+                {form.photoUrl ? t('photo_change') : t('photo_upload')}
               </button>
               {form.photoUrl && (
                 <button type="button" className="btn btn-danger btn-sm" onClick={() => setForm(f => ({ ...f, photoUrl: '' }))}>✕</button>
@@ -142,14 +144,14 @@ export default function TrainerManager({ trainers, onUpdateTrainers }: Props) {
             </div>
           </div>
           <div className="form-group form-group-wide">
-            <label className="form-label">Notizen (optional)</label>
-            <input className="form-input" type="text" placeholder="z.B. Torwarttrainer..."
+            <label className="form-label">{t('label_notes_optional')}</label>
+            <input className="form-input" type="text" placeholder={t('placeholder_notes_trainer')}
               value={form.notes}
               onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
           </div>
           <div className="add-player-btn-row">
             <button className="btn btn-primary btn-lg" onClick={handleAddTrainer}>
-              + Trainer hinzufügen
+              {t('trainer_add_btn')}
             </button>
           </div>
         </div>
@@ -157,12 +159,12 @@ export default function TrainerManager({ trainers, onUpdateTrainers }: Props) {
 
       <div className="player-count">
         <span className="badge">{trainers.length}</span>
-        <span>Trainer im Stab</span>
+        <span>{t('trainer_count')}</span>
       </div>
 
       <div className="player-list">
         {sortedTrainers.length === 0 && (
-          <div className="empty-state">Noch keine Trainer vorhanden.</div>
+          <div className="empty-state">{t('trainer_empty')}</div>
         )}
         {sortedTrainers.map(trainer => (
           <div key={trainer.id} className="player-row card">
@@ -172,26 +174,26 @@ export default function TrainerManager({ trainers, onUpdateTrainers }: Props) {
                 <div className="edit-fields">
                   <div className="edit-fields-row">
                     <div className="form-group">
-                      <label className="form-label">Vorname</label>
+                      <label className="form-label">{t('label_firstname')}</label>
                       <input className="form-input" type="text" value={editForm.firstName}
                         onChange={e => setEditForm(f => ({ ...f, firstName: e.target.value }))} />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Nachname</label>
+                      <label className="form-label">{t('label_lastname')}</label>
                       <input className="form-input" type="text" value={editForm.lastName}
                         onChange={e => setEditForm(f => ({ ...f, lastName: e.target.value }))} />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Rolle</label>
+                      <label className="form-label">{t('label_role')}</label>
                       <input className="form-input" type="text" value={editForm.role}
                         onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))} />
                     </div>
                     <div className="form-group" style={{ flex: 2 }}>
-                      <label className="form-label">Foto</label>
+                      <label className="form-label">{t('label_photo')}</label>
                       <div className="photo-field">
                         {editForm.photoUrl && <img src={editForm.photoUrl} alt="" className="photo-thumb" />}
                         <button type="button" className="btn btn-secondary btn-sm" onClick={() => setCropperTarget('edit')}>
-                          {editForm.photoUrl ? '✎ Foto ändern' : '📷 Foto hochladen'}
+                          {editForm.photoUrl ? t('photo_change') : t('photo_upload')}
                         </button>
                         {editForm.photoUrl && (
                           <button type="button" className="btn btn-danger btn-sm" onClick={() => setEditForm(f => ({ ...f, photoUrl: '' }))}>✕</button>
@@ -200,13 +202,13 @@ export default function TrainerManager({ trainers, onUpdateTrainers }: Props) {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Notizen</label>
+                    <label className="form-label">{t('label_notes')}</label>
                     <input className="form-input" type="text" value={editForm.notes}
                       onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} />
                   </div>
                   <div className="edit-actions">
-                    <button className="btn btn-primary btn-sm" onClick={() => handleSaveEdit(trainer.id)}>✓ Speichern</button>
-                    <button className="btn btn-secondary btn-sm" onClick={() => setEditingId(null)}>Abbrechen</button>
+                    <button className="btn btn-primary btn-sm" onClick={() => handleSaveEdit(trainer.id)}>{t('btn_save')}</button>
+                    <button className="btn btn-secondary btn-sm" onClick={() => setEditingId(null)}>{t('btn_cancel')}</button>
                   </div>
                 </div>
               </div>
@@ -223,14 +225,14 @@ export default function TrainerManager({ trainers, onUpdateTrainers }: Props) {
                 <div className="player-actions">
                   {deleteConfirmId === trainer.id ? (
                     <>
-                      <span className="delete-confirm-text">Löschen?</span>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(trainer.id)}>Ja</button>
-                      <button className="btn btn-secondary btn-sm" onClick={() => setDeleteConfirmId(null)}>Nein</button>
+                      <span className="delete-confirm-text">{t('confirm_delete')}</span>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(trainer.id)}>{t('confirm_yes')}</button>
+                      <button className="btn btn-secondary btn-sm" onClick={() => setDeleteConfirmId(null)}>{t('confirm_no')}</button>
                     </>
                   ) : (
                     <>
-                      <button className="btn btn-secondary btn-sm" onClick={() => handleStartEdit(trainer)}>✎ Bearbeiten</button>
-                      <button className="btn btn-danger btn-sm" onClick={() => setDeleteConfirmId(trainer.id)}>✕ Löschen</button>
+                      <button className="btn btn-secondary btn-sm" onClick={() => handleStartEdit(trainer)}>{t('btn_edit')}</button>
+                      <button className="btn btn-danger btn-sm" onClick={() => setDeleteConfirmId(trainer.id)}>{t('btn_delete')}</button>
                     </>
                   )}
                 </div>

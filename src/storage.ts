@@ -1,16 +1,14 @@
-import { Player, Trainer, Lineup } from './types';
+import { Player, Trainer, Lineup, TeamSettings, DEFAULT_SETTINGS } from './types';
 import { DEMO_PLAYERS, DEMO_TRAINERS } from './demoData';
 
-const PLAYERS_KEY = 'fcg_players';
-const TRAINERS_KEY = 'fcg_trainers';
-const LINEUP_KEY = 'fcg_lineup';
+const key = (teamSlug: string, name: string) => `fcg_${teamSlug}_${name}`;
 
-export function savePlayers(players: Player[]): void {
-  localStorage.setItem(PLAYERS_KEY, JSON.stringify(players));
+export function savePlayers(teamSlug: string, players: Player[]): void {
+  localStorage.setItem(key(teamSlug, 'players'), JSON.stringify(players));
 }
 
-export function loadPlayers(): Player[] {
-  const raw = localStorage.getItem(PLAYERS_KEY);
+export function loadPlayers(teamSlug: string): Player[] {
+  const raw = localStorage.getItem(key(teamSlug, 'players'));
   if (!raw) return DEMO_PLAYERS;
   try {
     const parsed = JSON.parse(raw) as Player[];
@@ -20,12 +18,12 @@ export function loadPlayers(): Player[] {
   }
 }
 
-export function saveTrainers(trainers: Trainer[]): void {
-  localStorage.setItem(TRAINERS_KEY, JSON.stringify(trainers));
+export function saveTrainers(teamSlug: string, trainers: Trainer[]): void {
+  localStorage.setItem(key(teamSlug, 'trainers'), JSON.stringify(trainers));
 }
 
-export function loadTrainers(): Trainer[] {
-  const raw = localStorage.getItem(TRAINERS_KEY);
+export function loadTrainers(teamSlug: string): Trainer[] {
+  const raw = localStorage.getItem(key(teamSlug, 'trainers'));
   if (!raw) return DEMO_TRAINERS;
   try {
     const parsed = JSON.parse(raw) as Trainer[];
@@ -35,16 +33,15 @@ export function loadTrainers(): Trainer[] {
   }
 }
 
-export function saveLineup(lineup: Lineup): void {
-  localStorage.setItem(LINEUP_KEY, JSON.stringify(lineup));
+export function saveLineup(teamSlug: string, lineup: Lineup): void {
+  localStorage.setItem(key(teamSlug, 'lineup'), JSON.stringify(lineup));
 }
 
-export function loadLineup(trainerIds: string[] = []): Lineup {
-  const raw = localStorage.getItem(LINEUP_KEY);
+export function loadLineup(teamSlug: string, trainerIds: string[] = []): Lineup {
+  const raw = localStorage.getItem(key(teamSlug, 'lineup'));
   if (!raw) return { starters: {}, substitutes: [], absent: [], coaches: trainerIds };
   try {
     const parsed = JSON.parse(raw) as Lineup;
-    // Default to all trainers if coaches is empty OR contains stale non-ID values
     const hasValidCoach = parsed.coaches?.some(id => trainerIds.includes(id));
     if (!parsed.coaches || parsed.coaches.length === 0 || !hasValidCoach) {
       parsed.coaches = trainerIds;
@@ -52,5 +49,19 @@ export function loadLineup(trainerIds: string[] = []): Lineup {
     return parsed;
   } catch {
     return { starters: {}, substitutes: [], absent: [], coaches: trainerIds };
+  }
+}
+
+export function saveSettings(teamSlug: string, settings: TeamSettings): void {
+  localStorage.setItem(key(teamSlug, 'settings'), JSON.stringify(settings));
+}
+
+export function loadSettings(teamSlug: string): TeamSettings {
+  const raw = localStorage.getItem(key(teamSlug, 'settings'));
+  if (!raw) return DEFAULT_SETTINGS;
+  try {
+    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_SETTINGS;
   }
 }

@@ -3,6 +3,11 @@
   --yellow: #FFD400;
   --yellow-dark: #e6be00;
   --black: #050505;
+  --on-primary: #050505;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --on-surface: #111111;
+  --border-color-themed: #e0e0e0;
   --dark-gray: #1a1a1a;
   --mid-gray: #f0f0f0;
   --light-gray: #888888;
@@ -19,13 +24,14 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--white);
+  background-color: var(--surface);
+  color: var(--on-surface);
 }
 
 /* ========== NAVIGATION ========== */
 .app-nav {
-  background-color: var(--white);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border-color-themed);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -45,7 +51,7 @@
 .app-tab {
   background: transparent;
   border: none;
-  color: var(--black);
+  color: var(--on-surface);
   font-family: var(--font-display);
   font-size: 1.1rem;
   letter-spacing: 2px;
@@ -58,13 +64,13 @@
 }
 
 .app-tab:hover {
-  background: rgba(255, 212, 0, 0.18);
-  color: var(--black);
+  background: color-mix(in srgb, var(--yellow) 18%, transparent);
+  color: var(--on-surface);
 }
 
 .app-tab.active {
   background: var(--yellow);
-  color: var(--black);
+  color: var(--on-primary);
   border-radius: 999px;
 }
 
@@ -83,7 +89,7 @@
   font-family: var(--font-display);
   font-size: clamp(0.55rem, 2.5vw, 1.15rem);
   letter-spacing: clamp(0px, 0.3vw, 2px);
-  color: var(--black);
+  color: var(--on-primary);
   font-weight: 900;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -107,7 +113,7 @@
   height: clamp(60px, 14vw, 110px);
   border-radius: 50%;
   background: var(--yellow);
-  border: 3px solid var(--black);
+  border: 3px solid var(--on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,7 +151,7 @@
   font-family: var(--font-display);
   font-size: 2rem;
   letter-spacing: 3px;
-  color: var(--black);
+  color: var(--on-surface);
   text-transform: uppercase;
   margin-bottom: 1.5rem;
   display: flex;
@@ -182,19 +188,21 @@
 
 .btn-primary {
   background: var(--yellow);
-  color: var(--black);
+  color: var(--on-primary);
 }
 .btn-primary:hover {
   background: var(--yellow-dark);
+  color: var(--on-primary);
 }
 
 .btn-secondary {
-  background: var(--white);
-  color: var(--black);
-  border: 1px solid var(--border-color);
+  background: var(--surface-raised);
+  color: var(--on-surface);
+  border: 1px solid var(--border-color-themed);
 }
 .btn-secondary:hover {
-  background: var(--mid-gray);
+  background: var(--surface);
+  filter: brightness(0.93);
 }
 
 .btn-danger {
@@ -207,12 +215,12 @@
 
 .btn-outline {
   background: transparent;
-  color: var(--black);
-  border: 2px solid var(--black);
+  color: var(--on-surface);
+  border: 2px solid var(--on-surface);
 }
 .btn-outline:hover {
   background: var(--yellow);
-  color: var(--black);
+  color: var(--on-primary);
   border-color: var(--yellow);
 }
 
@@ -240,14 +248,14 @@
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--dark-gray);
+  color: var(--on-surface);
 }
 
 .form-input {
-  background: var(--white);
-  border: 1px solid var(--border-color);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-color-themed);
   border-radius: var(--border-radius);
-  color: var(--black);
+  color: var(--on-surface);
   padding: 0.6rem 0.8rem;
   font-size: 1rem;
   transition: border-color var(--transition);
@@ -262,9 +270,9 @@
 
 /* ========== CARD ========== */
 .card {
-  background: var(--white);
+  background: var(--surface-raised);
   border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color-themed);
   border-top: 3px solid var(--yellow);
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -274,7 +282,7 @@
 .badge {
   display: inline-block;
   background: var(--yellow);
-  color: var(--black);
+  color: var(--on-primary);
   font-weight: 900;
   font-size: 0.75rem;
   padding: 0.15rem 0.5rem;

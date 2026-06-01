@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Player, Trainer, Lineup, PositionKey, POSITION_LABELS } from '../../types';
+﻿import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Player, Trainer, Lineup, PositionKey, TeamSettings } from '../../types';
+import { FormationConfig, getStarterOrder } from '../../formations';
 import './PresentationView.css';
 import logoSvg from '../../assets/logo.svg';
 import { useAnthem } from '../../hooks/useAnthem';
@@ -9,33 +11,15 @@ interface Props {
   players: Player[];
   trainers: Trainer[];
   lineup: Lineup;
+  settings: TeamSettings;
+  formation: FormationConfig;
 }
-
-// [top%, left%] within the portrait field element (1-3-3 formation, GK at bottom)
-const FIELD_POS: Record<PositionKey, [number, number]> = {
-  goalkeeper:    [84, 50],
-  leftDefense:   [65, 18],
-  centerDefense: [59, 50],
-  rightDefense:  [65, 82],
-  leftWing:      [34, 18],
-  striker:       [26, 50],
-  rightWing:     [34, 82],
-};
-
-const STARTER_ORDER: PositionKey[] = [
-  'goalkeeper',
-  'leftDefense',
-  'rightDefense',
-  'centerDefense',
-  'leftWing',
-  'rightWing',
-  'striker',
-];
 
 type MainPhase = 'intro' | 'starters' | 'substitutes' | 'end';
 type SpotState = 'entering' | 'showing' | 'exiting';
 
-export default function PresentationView({ players, trainers, lineup }: Props) {
+export default function PresentationView({ players, trainers, lineup, settings, formation }: Props) {
+  const { t } = useTranslation();
   const [mainPhase, setMainPhase] = useState<MainPhase>('intro');
   const [spotIdx, setSpotIdx] = useState(-1);
   const [spotState, setSpotState] = useState<SpotState>('entering');
@@ -47,7 +31,16 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
 
   const anthem = useAnthem();
 
-  const starters = STARTER_ORDER
+  // Build field positions and label map from formation
+  const fieldPos: Record<string, [number, number]> = {};
+  formation.rows.flat().forEach(p => { fieldPos[p.key] = p.fieldPos; });
+
+  const starterOrder = getStarterOrder(formation);
+
+  const posLabelMap: Record<string, string> = {};
+  formation.rows.flat().forEach(p => { posLabelMap[p.key] = p.labelKey; });
+
+  const starters = starterOrder
     .map(posKey => {
       const id = lineup.starters[posKey];
       const player = id ? players.find(p => p.id === id) : undefined;
@@ -59,7 +52,6 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
     .map(id => players.find(p => p.id === id))
     .filter(Boolean) as Player[];
 
-  // Intro → starters: set all state atomically so React renders them together
   useEffect(() => {
     if (mainPhase !== 'intro') return;
     const t = setTimeout(() => {
@@ -77,10 +69,6 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainPhase]);
 
-  // When starters phase begins (no longer needed, handled above)
-
-
-  // Spotlight state machine
   useEffect(() => {
     if (mainPhase !== 'starters' || spotIdx < 0 || spotIdx >= starters.length) return;
 
@@ -92,7 +80,6 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
     } else if (spotState === 'showing') {
       timers.push(setTimeout(() => setSpotState('exiting'), 2000));
     } else if (spotState === 'exiting') {
-      // trigger the token arrival animation on field
       timers.push(setTimeout(() => setArrivingPos(posKey), 100));
       timers.push(setTimeout(() => {
         setPlaced(prev => new Set([...prev, posKey]));
@@ -114,7 +101,6 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainPhase, spotIdx, spotState]);
 
-  // All players placed → wait then advance
   useEffect(() => {
     if (mainPhase !== 'starters' || !allPlaced) return;
     const t = setTimeout(() => {
@@ -123,7 +109,6 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
     return () => clearTimeout(t);
   }, [mainPhase, allPlaced, subs.length]);
 
-  // Substitutes → end
   useEffect(() => {
     if (mainPhase !== 'substitutes') return;
     const t = setTimeout(() => setMainPhase('end'), subs.length * 500 + 2500);
@@ -139,6 +124,13 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
     setMainPhase('intro');
     setKey(k => k + 1);
   }, []);
+
+  const logoSrc = settings.logoUrl || logoSvg;
+  const [teamPrefix, teamCity] = (() => {
+    const parts = settings.teamName.split(' ');
+    if (parts.length >= 2) return [parts[0], parts.slice(1).join(' ')];
+    return ['', settings.teamName];
+  })();
 
   const handleMusicToggle = useCallback(() => {
     if (!musicOn) {
@@ -166,8 +158,8 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
       ? ' · ' + new Date(lineup.matchDate + 'T12:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' })
       : '';
     const shareData = {
-      title: `FC Gränichen Aufstellung${opponent}`,
-      text: `Aufstellung FC Gränichen${opponent}${date} – Hopp FCG! 🟡⚫`,
+      title: t('share_title', { teamName: settings.teamName, opponent }),
+      text: t('share_text', { teamName: settings.teamName, opponent, date, shortName: settings.shortName }),
       url: window.location.href,
     };
     if (navigator.share && navigator.canShare?.(shareData)) {
@@ -175,7 +167,7 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
     } else {
       try {
         await navigator.clipboard.writeText(window.location.href);
-        setShareFeedback('Link kopiert!');
+        setShareFeedback(t('share_copied'));
         setTimeout(() => setShareFeedback(''), 2500);
       } catch {
         setShareFeedback('URL: ' + window.location.href);
@@ -197,11 +189,11 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
           </div>
           <div className="pres-intro-content">
             <div className="pres-logo-wrap">
-              <img src={logoSvg} alt="FC Gränichen" className="pres-logo" />
+              <img src={logoSrc} alt={settings.teamName} className="pres-logo" />
             </div>
             <div className="pres-club-name">
-              <span className="pres-club-fc">FC</span>
-              <span className="pres-club-city">GRÄNICHEN</span>
+              {teamPrefix && <span className="pres-club-fc">{teamPrefix}</span>}
+              <span className="pres-club-city">{teamCity.toUpperCase()}</span>
             </div>
             {(lineup.opponent || lineup.matchDate) && (
               <div className="pres-match-info">
@@ -242,7 +234,8 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
               </div>
 
               {starters.map(({ posKey, player }) => {
-                const [top, left] = FIELD_POS[posKey];
+                const pos = fieldPos[posKey];
+                const [top, left] = pos ?? [50, 50];
                 const isPlaced = placed.has(posKey);
                 const isArriving = arrivingPos === posKey;
                 const isCaptain = lineup.captain === player.id;
@@ -263,13 +256,13 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
             </div>
           </div>
 
-          {/* Spotlight overlay — always show while in starters phase and spotIdx valid */}
+          {/* Spotlight overlay */}
           {spotIdx >= 0 && spotIdx < starters.length && (() => {
             const entry = starters[spotIdx];
             return (
               <div className={`pres-spotlight pres-spotlight-${spotState}`}>
                 <div className="pres-spotlight-inner">
-                  <div className="pres-spot-pos">{POSITION_LABELS[entry.posKey]}</div>
+                  <div className="pres-spot-pos">{t(posLabelMap[entry.posKey] ?? entry.posKey)}</div>
                   <div className="pres-spot-circle">
                     <>
                       <img src={avatarSrc(entry.player.photoUrl)} alt="" />
@@ -299,7 +292,7 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
           <div className="pres-field-bg pres-field-bg-dim" />
           <div className="pres-players-content">
             <div className="pres-phase-heading">
-              <span className="pres-phase-heading-text">ERSATZSPIELER</span>
+              <span className="pres-phase-heading-text">{t('pres_substitutes_heading')}</span>
               <div className="pres-phase-heading-line" />
             </div>
             <div className={`pres-subs-grid${subs.length === 0 ? ' empty' : ''}`}>
@@ -321,11 +314,11 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
                   </div>
                 </div>
               ))}
-              {subs.length === 0 && <div className="pres-empty-msg">Keine Ersatzspieler konfiguriert.</div>}
+              {subs.length === 0 && <div className="pres-empty-msg">{t('pres_no_subs')}</div>}
             </div>
             {lineup.coaches.length > 0 && (
               <div className="pres-coaches">
-                <div className="pres-coaches-label">TRAINERSTAB</div>
+                <div className="pres-coaches-label">{t('pres_coaches_label')}</div>
                 <div className="pres-coaches-list">
                   {lineup.coaches.map((coachId) => {
                     const trainer = trainers.find(t => t.id === coachId);
@@ -353,23 +346,23 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
             <div className="pres-shape pres-shape-2" />
           </div>
           <div className="pres-end-content">
-            <div className="pres-end-logo"><img src={logoSvg} alt="FC Gränichen" /></div>
+            <div className="pres-end-logo"><img src={logoSrc} alt={settings.teamName} /></div>
             <div className="pres-end-hopp">HOPP</div>
-            <div className="pres-end-club">FC GRÄNICHEN!</div>
+            <div className="pres-end-club">{settings.teamName.toUpperCase()}!</div>
             <div className="pres-end-emojis">💛 🖤 💛 🖤 💛</div>
-            <div className="pres-end-tagline">ALLES GEBEN – ZUSAMMEN SIEGEN</div>
+            <div className="pres-end-tagline">{t('pres_end_tagline')}</div>
           </div>
         </div>
       )}
 
       {/* ===== CONTROLS ===== */}
       <div className="pres-controls">
-        <button className="pres-ctrl-btn" onClick={handleRestart}>⟳ <span>Neustart</span></button>
-        <button className="pres-ctrl-btn" onClick={handleFullscreen}>⛶ <span>Vollbild</span></button>
+        <button className="pres-ctrl-btn" onClick={handleRestart}>⟳ <span>{t('btn_restart')}</span></button>
+        <button className="pres-ctrl-btn" onClick={handleFullscreen}>⛶ <span>{t('btn_fullscreen')}</span></button>
         <button
           className={`pres-ctrl-btn pres-ctrl-music${musicOn ? ' active' : ''}`}
           onClick={handleMusicToggle}
-          title={musicOn ? 'Musik ausschalten' : 'Musik einschalten'}
+          title={musicOn ? t('btn_music') : t('btn_music')}
         >
           {musicOn ? (
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}>
@@ -383,7 +376,7 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
               <path d="M18 13.7A3 3 0 0 0 18 19a3 3 0 0 0 2.83-4"/>
             </svg>
           )}
-          {' '}<span>{musicOn ? 'Musik' : 'Musik'}</span>
+          {' '}<span>{t('btn_music')}</span>
         </button>
         <button className="pres-ctrl-btn pres-ctrl-share" onClick={handleShare}>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}>
@@ -391,12 +384,10 @@ export default function PresentationView({ players, trainers, lineup }: Props) {
             <polyline points="16 6 12 2 8 6"/>
             <line x1="12" y1="2" x2="12" y2="15"/>
           </svg>
-          {' '}<span>Teilen</span>
+          {' '}<span>{t('btn_share')}</span>
         </button>
       </div>
       {shareFeedback && <div className="pres-share-toast">{shareFeedback}</div>}
     </div>
   );
-}
-
-
+}

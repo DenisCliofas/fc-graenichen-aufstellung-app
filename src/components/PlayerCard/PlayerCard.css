@@ -1,8 +1,8 @@
-.player-card {
+﻿.player-card {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--border-color);
   border-left: 3px solid var(--yellow);
   border-radius: var(--border-radius);
@@ -10,7 +10,7 @@
 }
 
 .player-card-number {
-  background: var(--black);
+  background: var(--on-surface);
   border: 2px solid var(--yellow);
   border-radius: 50%;
   display: flex;
@@ -50,7 +50,7 @@
 .player-card-lastname {
   font-family: var(--font-body);
   font-weight: 900;
-  color: var(--black);
+  color: var(--on-surface);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -102,7 +102,7 @@
 }
 
 .number-fallback {
-  background: var(--black);
+  background: var(--on-surface);
   border: 2px solid var(--yellow);
   display: flex;
   align-items: center;
