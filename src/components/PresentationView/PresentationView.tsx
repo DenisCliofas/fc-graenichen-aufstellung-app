@@ -390,4 +390,4 @@ export default function PresentationView({ players, trainers, lineup, settings, 
       {shareFeedback && <div className="pres-share-toast">{shareFeedback}</div>}
     </div>
   );
-}
+}

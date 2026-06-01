@@ -354,4 +354,4 @@ export default function LineupConfigurator({ players, trainers, lineup, playerCo
       )}
     </div>
   );
-}
+}

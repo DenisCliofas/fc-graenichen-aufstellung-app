@@ -7,8 +7,8 @@
 
 .field {
   position: relative;
-  width: 100%;
-  max-width: 380px;
+  width: 380px;
+  max-width: 100%;
   aspect-ratio: 0.65 / 1;
   background: linear-gradient(180deg, #2a6e2a 0%, #2d7a2d 50%, #2a6e2a 100%);
   border: 3px solid rgba(255, 255, 255, 0.5);
@@ -280,8 +280,8 @@
 
 .field {
   position: relative;
-  width: 100%;
-  max-width: 380px;
+  width: 380px;
+  max-width: 100%;
   aspect-ratio: 0.65 / 1;
   background: linear-gradient(180deg, #2a6e2a 0%, #2d7a2d 50%, #2a6e2a 100%);
   border: 3px solid rgba(255, 255, 255, 0.5);
