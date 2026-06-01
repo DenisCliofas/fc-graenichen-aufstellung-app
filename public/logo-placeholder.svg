@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+  <!-- Shield shape -->
+  <path d="M50 4 L92 20 L92 62 Q92 95 50 116 Q8 95 8 62 L8 20 Z"
+        fill="#FFD400" stroke="#050505" stroke-width="3"/>
+  <!-- Inner shield border -->
+  <path d="M50 12 L84 25 L84 62 Q84 90 50 108 Q16 90 16 62 L16 25 Z"
+        fill="none" stroke="#050505" stroke-width="2"/>
+  <!-- Diagonal split -->
+  <path d="M50 12 L50 108" stroke="#050505" stroke-width="2"/>
+  <!-- Left side black fill -->
+  <path d="M50 12 L16 25 L16 62 Q16 90 50 108 Z" fill="#050505"/>
+  <!-- Football hexagon pattern top -->
+  <circle cx="50" cy="42" r="14" fill="none" stroke="#FFD400" stroke-width="1.5" opacity="0.6"/>
+  <!-- FCG Text -->
+  <text x="50" y="50" text-anchor="middle" font-family="Arial Black, sans-serif"
+        font-size="14" font-weight="900" fill="#FFD400" letter-spacing="1">FCG</text>
+  <!-- Stars -->
+  <text x="50" y="70" text-anchor="middle" font-family="Arial" font-size="10" fill="#FFD400">★★★</text>
+  <!-- Bottom text -->
+  <text x="50" y="88" text-anchor="middle" font-family="Arial Narrow, sans-serif"
+        font-size="7" font-weight="700" fill="#FFD400" letter-spacing="0.5">GRÄNICHEN</text>
+</svg>
