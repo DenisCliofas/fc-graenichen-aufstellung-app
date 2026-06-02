@@ -64,6 +64,17 @@ export default function TeamSettingsEditor({ settings, onSave }: Props) {
           />
         </div>
 
+        <div className="form-group">
+          <label className="form-label">{t('settings_website')}</label>
+          <input
+            className="form-input"
+            type="url"
+            value={draft.website || ''}
+            onChange={e => set('website', e.target.value || undefined)}
+            placeholder="https://www.fc-example.ch"
+          />
+        </div>
+
         <div className="tsed-section-label">{t('settings_section_colors')}</div>
 
         <div className="tsed-color-row">

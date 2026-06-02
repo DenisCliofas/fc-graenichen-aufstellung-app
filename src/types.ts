@@ -37,6 +37,7 @@ export type TeamSettings = {
   primaryColor: string;
   secondaryColor: string;
   logoUrl?: string;
+  website?: string;
   language?: string;
   playerCount?: 7 | 9 | 11;
 };

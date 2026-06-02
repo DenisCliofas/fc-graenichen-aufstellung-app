@@ -105,7 +105,7 @@ function EditorLayout() {
 
       <div className="app-header-banner">
         <span className="app-banner-text">{t('app_title')}</span>
-        <a className="app-banner-logo" href="https://www.fcgraenichen.ch" target="_blank" rel="noopener noreferrer">
+        <a className="app-banner-logo" href={settings.website || 'https://www.fcgraenichen.ch'} target="_blank" rel="noopener noreferrer">
           <img src={logoSrc} alt={settings.teamName} />
         </a>
         <span className="app-banner-text">{teamLabel}</span>
