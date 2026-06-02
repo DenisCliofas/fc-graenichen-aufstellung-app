@@ -1,5 +1,7 @@
 ﻿# Aufstellungs-App
 
+> 🇬🇧 [English version (README.en.md)](README.en.md) · 🍴 [Fork-Anleitung (FORK_GUIDE.md)](FORK_GUIDE.md)
+
 Eine animierte Web-App um Fussball-Aufstellungen zu erstellen und zu präsentieren. Unterstützt 7-gegen-7, 9-gegen-9 und 11-gegen-11. Jedes Team bekommt eine eigene, isolierte URL — keine Installation, kein Login.
 
 Unterstützte Sprachen: Deutsch, English, Français, Italiano.
