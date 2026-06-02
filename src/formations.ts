@@ -228,5 +228,5 @@ export function getAllPositionKeys(formation: FormationConfig): string[] {
 }
 
 export function getStarterOrder(formation: FormationConfig): string[] {
-  return [...formation.rows].reverse().flat().map(p => p.key);
+  return formation.rows.flat().map(p => p.key);
 }
